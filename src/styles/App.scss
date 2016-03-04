@@ -52,51 +52,54 @@ body {
   flex-direction: column;
 }
 
-.index {
+.SplitPane.vertical {
   display: flex;
   flex-direction: row;
   align-items: stretch;
   flex: 1;
   /*background-color: #232323;*/
-}
 
-.index .sidebar {
-  width: 250px;
-  border-right: 1px solid #E8E8E8;
-  background-color: rgba(232, 242, 255, 0.4);
-  /*background-color: #d5d5d5;*/
-}
+  .sidebar {
+    // width: 250px;
+    background-color: rgba(232, 242, 255, 0.4);
+    /*background-color: #d5d5d5;*/
+    height: 100%;
+  }
 
-.index .editor {
-  flex: 1;
-  cursor: text;
-/*  -webkit-user-select: text;*/
-  /*background-color: #272822;*/
+  .editor {
+    cursor: text;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  /*  -webkit-user-select: text;*/
+    /*background-color: #272822;*/
 
-  .note-title {
-    padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
-
-    &-input {
-      width: 100%;
-      border-width: 0px;
-      border-bottom: 1px solid #E8E8E8;
+    .note-title {
       padding: 10px;
+      width: 100%;
       box-sizing: border-box;
 
-      &:focus {
-        outline: none;
+      &-input {
+        width: 100%;
+        border-width: 0px;
+        border-bottom: 1px solid #E8E8E8;
+        padding: 10px;
+        box-sizing: border-box;
+
+        &:focus {
+          outline: none;
+        }
+
       }
 
     }
 
   }
-
 }
 
 .CodeMirror {
-  height: -webkit-calc(100vh) !important;
+  height: -webkit-calc(100vh - 63px) !important;
   /*height: auto !important;*/
   font-size: 14px;
 }
@@ -124,4 +127,34 @@ body {
     }
   }
 
+}
+
+.Resizer {
+  background: #d5d5d5;
+  z-index: 1;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding;
+  background-clip: padding-box;
+
+  &:hover {
+    -webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+  }
+
+  &.vertical {
+    width: 5px;
+    margin: 0 -2px;
+    border-left: 2px solid rgba(255, 255, 255, 0);
+    border-right: 2px solid rgba(255, 255, 255, 0);
+    cursor: col-resize;
+    height: 100%;
+
+    &:hover {
+      border-left: 2px solid rgba(213, 213, 213, 0.3);
+      border-right: 2px solid rgba(213, 213, 213, 0.3);
+    }
+  }
 }

@@ -3,6 +3,8 @@ require('styles/App.scss');
 
 eRequire('electron').webFrame.setZoomLevelLimits(1, 1);
 
+import React from 'react';
+
 var CodeMirror = require('codemirror');
 
 /** Base setup */
@@ -13,15 +15,18 @@ require('codemirror/keymap/sublime');
 
 /** Addons */
 require('codemirror/addon/edit/continuelist');
-require('codemirror/addon/fold/foldcode');
-require('codemirror/addon/fold/foldgutter');
-require('codemirror/addon/fold/brace-fold');
-require('codemirror/addon/fold/markdown-fold');
+require('codemirror/addon/search/search');
 require('codemirror/addon/search/match-highlighter');
+require('codemirror/addon/dialog/dialog');
+require('codemirror/addon/dialog/dialog.css');
+// require('codemirror/addon/fold/foldcode');
+// require('codemirror/addon/fold/foldgutter');
+// require('codemirror/addon/fold/brace-fold');
+// require('codemirror/addon/fold/markdown-fold');
+// require('codemirror/addon/fold/foldgutter.css');
 require('codemirror/addon/selection/active-line');
 
 require('codemirror/lib/codemirror.css');
-require('codemirror/addon/fold/foldgutter.css');
 
 /** Themes */
 require('codemirror/theme/neo.css');
@@ -34,9 +39,9 @@ let math = require('mathjs');
 let moment = require('moment');
 let classNames = require('classnames');
 
-import React from 'react';
+let SplitPane = require('./SplitPane/SplitPane');
 
-let yeomanImage = require('../images/yeoman.png');
+// let db = new loki('loki.json');
 
 class AppComponent extends React.Component {
 
@@ -57,7 +62,7 @@ class AppComponent extends React.Component {
         // [extract-gfm]
 
     return (
-      <div className="index">
+      <SplitPane split="vertical" minSize="100" defaultSize="250" maxSize="500" className="index">
         <div className="sidebar">
           <div className="list">
             {this.state.notes.map(function(item, index) {
@@ -69,17 +74,19 @@ class AppComponent extends React.Component {
           </div>
 
         </div>
-        <div ref="editor" className="editor">
+        <div className="editor">
           <div className="note-title">
             <input ref="noteTitle" className="note-title-input" placeholder="Untitled Note" onChange={this.onTextChange.bind(this)} />
           </div>
+          <div ref="noteEditor" className="note-editor">
+          </div>
         </div>
-      </div>
+      </SplitPane>
     );
   }
 
   componentDidMount() {
-    this.document = CodeMirror(this.refs.editor, {
+    this.document = CodeMirror(this.refs.noteEditor, {
       mode: {
         name: "gfm",
         highlightFormatting: true
