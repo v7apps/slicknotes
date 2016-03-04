@@ -1,0 +1,57 @@
+.CodeMirror {
+  font-family: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+
+.CodeMirror-lines {
+  padding: 10px 20px 20px;
+}
+
+// .CodeMirror-lines {
+//   padding: 4px;
+// }
+
+.cm-header {
+  &.cm-header-1 {
+    font-size: 2.0571429rem;
+    margin-bottom: .21999rem;
+    padding-top: .78001rem
+  }
+
+  &.cm-header-2 {
+    font-size: 1.953125rem;
+    margin-bottom: .1835837rem;
+    padding-top: .8164163rem
+  }
+
+  &.cm-header-3 {
+    font-size: 1.6457143rem;
+    margin-bottom: .07599rem;
+    padding-top: .92401rem
+  }
+
+  &.cm-header-4 {
+    font-size: 1.5625rem;
+    margin-bottom: .546865rem;
+    padding-top: .453135rem
+  }
+
+  &.cm-header-5 {
+    font-size: 1.25rem;
+    margin-bottom: -.56251rem;
+    padding-top: .56251rem
+  }
+
+  &.cm-header-6 {
+    font-size: 1rem;
+    margin-bottom: -.65001rem;
+    padding-top: .65001rem
+  }
+}
+
+.CodeMirror-activeline-background {
+  background: rgba(232, 242, 255, 0.4);
+}
+
+.cm-cm-overlay.cm-matchhighlight {
+  border-bottom: 1px dotted rgba(132, 142, 155, 1.0);
+}

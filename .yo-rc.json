@@ -1,0 +1,7 @@
+{
+  "generator-react-webpack": {
+    "appName": "markbook",
+    "style": "scss",
+    "postcss": true
+  }
+}
