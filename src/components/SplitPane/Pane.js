@@ -8,10 +8,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactVendorPrefix = require('react-vendor-prefix');
-
-var _reactVendorPrefix2 = _interopRequireDefault(_reactVendorPrefix);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _react2.default.createClass({
@@ -39,7 +35,7 @@ exports.default = _react2.default.createClass({
             }
             style.flex = 'none';
         }
-        var prefixed = _reactVendorPrefix2.default.prefix({ styles: style });
+        var prefixed = { styles: style };
 
         return _react2.default.createElement(
             'div',

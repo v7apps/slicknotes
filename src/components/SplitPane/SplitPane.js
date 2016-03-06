@@ -20,10 +20,6 @@ var _Resizer = require('./Resizer');
 
 var _Resizer2 = _interopRequireDefault(_Resizer);
 
-var _reactVendorPrefix = require('react-vendor-prefix');
-
-var _reactVendorPrefix2 = _interopRequireDefault(_reactVendorPrefix);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = _react2.default.createClass({
@@ -170,7 +166,7 @@ exports.default = _react2.default.createClass({
 
         var children = this.props.children;
         var classes = ['SplitPane', split];
-        var prefixed = _reactVendorPrefix2.default.prefix({ styles: style });
+        var prefixed = { styles: style };
 
         return _react2.default.createElement(
             'div',

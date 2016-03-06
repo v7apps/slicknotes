@@ -1,57 +1,117 @@
-.CodeMirror {
-  font-family: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-}
+/* Edit theme for codemirror */
 
-.CodeMirror-lines {
-  padding: 10px 20px 20px;
-}
+/* Color scheme */
 
-// .CodeMirror-lines {
-//   padding: 4px;
-// }
+.cm-s-editor-light {
 
-.cm-header {
-  &.cm-header-1 {
-    font-size: 2.0571429rem;
-    margin-bottom: .21999rem;
-    padding-top: .78001rem
+  .CodeMirror-lines {
+    padding: 10px 20px 20px;
   }
 
-  &.cm-header-2 {
-    font-size: 1.953125rem;
-    margin-bottom: .1835837rem;
-    padding-top: .8164163rem
+  &.CodeMirror {
+    background-color: #ffffff;
+    color: #2e383c;
+    line-height: 1.4375;
+    font-family: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   }
 
-  &.cm-header-3 {
-    font-size: 1.6457143rem;
-    margin-bottom: .07599rem;
-    padding-top: .92401rem
+  .cm-comment {
+    font-family: Monaco, monospace;
+    color: #75787b;
   }
 
-  &.cm-header-4 {
-    font-size: 1.5625rem;
-    margin-bottom: .546865rem;
-    padding-top: .453135rem
+  .cm-keyword, .cm-property, .cm-formatting-task {
+    font-family: Monaco, monospace;
+    color: #1d75b3;
   }
 
-  &.cm-header-5 {
-    font-size: 1.25rem;
-    margin-bottom: -.56251rem;
-    padding-top: .56251rem
+  .cm-atom, .cm-number {
+    font-family: Monaco, monospace;
+    color: #75438a;
   }
 
-  &.cm-header-6 {
-    font-size: 1rem;
-    margin-bottom: -.65001rem;
-    padding-top: .65001rem
+  .cm-node, .cm-tag {
+    font-family: Monaco, monospace;
+    color: #9c3328;
   }
-}
 
-.CodeMirror-activeline-background {
-  background: rgba(232, 242, 255, 0.4);
-}
+  .cm-string {
+    font-family: Monaco, monospace;
+    color: #b35e14;
+  }
 
-.cm-cm-overlay.cm-matchhighlight {
-  border-bottom: 1px dotted rgba(132, 142, 155, 1.0);
+  .cm-variable, .cm-qualifier {
+    font-family: Monaco, monospace;
+    color: #047d65;
+  }
+
+  /* Editor styling */
+  pre {
+    padding: 0;
+  }
+
+  .CodeMirror-gutters {
+    border: none;
+    border-right: 10px solid transparent;
+    background-color: transparent;
+  }
+
+  .CodeMirror-linenumber {
+    padding: 0;
+    color: #e0e2e5;
+  }
+
+  .CodeMirror-guttermarker { color: #1d75b3; }
+  .CodeMirror-guttermarker-subtle { color: #e0e2e5; }
+
+  .CodeMirror-cursor {
+    border-color: rgba(155,157,162,0.37);
+    z-index: 1;
+  }
+
+  .cm-header {
+    &.cm-header-1 {
+      font-size: 2.0571429rem;
+      margin-bottom: .21999rem;
+      padding-top: .78001rem
+    }
+
+    &.cm-header-2 {
+      font-size: 1.953125rem;
+      margin-bottom: .1835837rem;
+      padding-top: .8164163rem
+    }
+
+    &.cm-header-3 {
+      font-size: 1.6457143rem;
+      margin-bottom: .07599rem;
+      padding-top: .92401rem
+    }
+
+    &.cm-header-4 {
+      font-size: 1.5625rem;
+      margin-bottom: .546865rem;
+      padding-top: .453135rem
+    }
+
+    &.cm-header-5 {
+      font-size: 1.25rem;
+      margin-bottom: -.56251rem;
+      padding-top: .56251rem
+    }
+
+    &.cm-header-6 {
+      font-size: 1rem;
+      margin-bottom: -.65001rem;
+      padding-top: .65001rem
+    }
+  }
+
+  .CodeMirror-activeline-background {
+    background: rgba(232, 242, 255, 0.4);
+  }
+
+  .cm-cm-overlay.cm-matchhighlight {
+    border-bottom: 1px dotted rgba(132, 142, 155, 1.0);
+  }
 }
