@@ -22,16 +22,13 @@ class SidebarComponent extends React.Component {
 
   render() {
     return (
-      <div className="sidebar">
-        <div className="list">
-          {this.state.notes.map(function(item, index) {
-            return (<div className={classNames('list-item', { active: this.state.activeItem == item._id })} key={item._id} onClick={function(){this.onSelectItem(index)}.bind(this)}>
-              <div className="title">{item.title}</div>
-              <div className="date">Last modified: {moment(item.date).fromNow()}</div>
-            </div>);
-          }.bind(this))}
-        </div>
-
+      <div className="list">
+        {this.state.notes.map(function(item, index) {
+          return (<div className={classNames('list-item', { active: this.state.activeItem == item._id })} key={item._id} onClick={function(){this.onSelectItem(index)}.bind(this)}>
+            <div className="title">{item.title}</div>
+            <div className="date">Last modified: {moment(item.date).fromNow()}</div>
+          </div>);
+        }.bind(this))}
       </div>
     );
   }

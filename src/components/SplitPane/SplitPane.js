@@ -135,22 +135,22 @@ exports.default = _react2.default.createClass({
         var style = {
             display: 'flex',
             flex: 1,
-            position: 'relative',
-            outline: 'none',
-            overflow: 'hidden',
-            MozUserSelect: 'text',
-            WebkitUserSelect: 'text',
-            msUserSelect: 'text',
-            userSelect: 'text'
+            // position: 'relative',
+            // outline: 'none',
+            // overflow: 'hidden',
+            // MozUserSelect: 'text',
+            // WebkitUserSelect: 'text',
+            // msUserSelect: 'text',
+            // userSelect: 'text'
         };
 
         if (split === 'vertical') {
             this.merge(style, {
                 flexDirection: 'row',
-                height: '100%',
-                position: 'absolute',
-                left: 0,
-                right: 0
+                // height: '100%',
+                // position: 'absolute',
+                // left: 0,
+                // right: 0
             });
         } else {
             this.merge(style, {
@@ -173,13 +173,13 @@ exports.default = _react2.default.createClass({
             { className: classes.join(' '), style: prefixed.styles, ref: 'splitPane' },
             _react2.default.createElement(
                 _Pane2.default,
-                { ref: 'pane1', key: 'pane1', split: split },
+                { ref: 'pane1', key: 'pane1', split: split, className: 'sidebar' },
                 children[0]
             ),
             _react2.default.createElement(_Resizer2.default, { ref: 'resizer', key: 'resizer', onMouseDown: this.onMouseDown, split: split }),
             _react2.default.createElement(
                 _Pane2.default,
-                { ref: 'pane2', key: 'pane2', split: split },
+                { ref: 'pane2', key: 'pane2', split: split, className: 'content' },
                 children[1]
             )
         );

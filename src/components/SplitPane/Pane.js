@@ -17,14 +17,15 @@ exports.default = _react2.default.createClass({
     },
     render: function render() {
         var split = this.props.split;
-        var classes = ['Pane', split];
+        var classes = ['Pane', split, this.props.className];
+        console.log(this.props);
 
         var style = {
             flex: 1,
             position: 'relative',
             outline: 'none',
             overflow: 'auto',
-            height: '100%'
+            // height: '100%'
         };
         if (this.state.size !== undefined) {
             if (split === 'vertical') {

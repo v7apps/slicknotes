@@ -20,6 +20,8 @@ require('codemirror/addon/dialog/dialog.css');
 // require('codemirror/addon/fold/markdown-fold');
 // require('codemirror/addon/fold/foldgutter.css');
 require('codemirror/addon/selection/active-line');
+// require('codemirror/addon/scroll/simplescrollbars');
+// require('codemirror/addon/scroll/simplescrollbars.css');
 
 require('codemirror/lib/codemirror.css');
 
@@ -74,6 +76,7 @@ class EditorComponent extends React.Component {
       showCursorWhenSelecting: true,
       styleActiveLine: true,
       addModeClass: true,
+      // scrollbarStyle: 'simple',
       extraKeys: {
         "Enter": "newlineAndIndentContinueMarkdownList",
         "Ctrl-Alt-C": () => CalculatorAddon(doc),
@@ -135,9 +138,9 @@ class EditorComponent extends React.Component {
   refreshPreview() {
     // console.log("cursorActivity");
     // console.log(this.document.getViewport());
-    // this.document.eachLine(function(line) {
-    //   autopreview(this.document, line);
-    // }.bind(this));
+    this.document.eachLine(function(line) {
+      autopreview(this.document, line);
+    }.bind(this));
   }
 
 }

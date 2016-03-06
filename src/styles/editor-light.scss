@@ -26,6 +26,22 @@
     color: #75787b;
   }
 
+  .cm-hr:after {
+    content: "";
+    height: 0px;
+    width: 93%;
+    border-top: 1px dashed #ccc;
+    display: block;
+    position: absolute;
+    left: 7%;
+    top: 50%;
+    margin-top: -1px;
+  }
+
+  .cm-formatting-task.cm-property + span {
+    text-decoration: line-through;
+  }
+
   .cm-keyword, .cm-property, .cm-formatting-task {
     color: #1d75b3;
   }
@@ -116,7 +132,7 @@
     border-bottom: 1px dotted rgba(132, 142, 155, 1.0);
   }
 
-  span[class^="cm-m-"]:not(.cm-m-markdown) {
+  span[class^="cm-m-"]:not(.cm-m-markdown), .cm-m-markdown.cm-formatting-task {
     @include monoStyle;
   }
 }

@@ -68,9 +68,9 @@ class NoteStore extends EventEmitter {
         }
         else {
           this.emit("LIST_CHANGED_EVENT");
-          return resolve(docs);
+          return resolve(newNote);
         }
-      });
+      }.bind(this));
     }.bind(this));
   }
 

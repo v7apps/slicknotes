@@ -117,6 +117,44 @@ function autopreview (cm, line) {
                     element.onclick = onclickFunc;
                 }
             },
+            anchor: {
+                regex: /\[(["'-a-zA-Z0-9@:%._\+~#=\.\/! ]*)\]\(([\(\)\[\]-a-zA-Z0-9@:%_\+~#=\.\/ ]+)(\s("|')([-a-zA-Z0-9@:%_\+~#=\.\/! ]*)("|')\s?)?\)/gi,
+                createElement: function (match) {
+                    var alt = match[1] || '',
+                        url = match[2],
+                        title = match[6],
+                        $element = $(`<a>${alt}</a>`).attr("href", url);
+                    if (title) {
+                        $element.attr("title", title);
+                    }
+                    return $element.get(0);
+                },
+                marker: {
+                    clearOnEnter: false,
+                    handleMouseEvents: true,
+                    inclusiveLeft: true,
+                    inclusiveRight: true
+                },
+                callback: function (textMarker, element) {
+                    var onclickFunc = function() {
+                      console.log("click");
+                        console.log(element);
+                        var pos = textMarker.find().to;
+                        textMarker.clear();
+                        cm.doc.setCursor(pos);
+                        cm.focus();
+                    };
+                    textMarker.on("beforeCursorEnter", function () {
+                        if (!doc.somethingSelected()) { // Fix blink on selection
+                            textMarker.clear();
+                        }
+                    });
+                    element.addEventListener("load", function() {
+                        textMarker.changed();
+                    }, false);
+                    element.onclick = onclickFunc;
+                }
+            },
             todolist: {
                 regex: /^(\*|-|\+)\s+\[(\s*|x)?\]\s+/g,
                 createElement: function (match) {
@@ -191,10 +229,12 @@ function autopreview (cm, line) {
             }
         };
 
-    var types = ["image", "todolist", "math", "header"];
+    var types = ["image", "atodolist", "math", "header", "anchor"];
 
     types.forEach( function(element, index) {
+      if( config[element] ) {
         replaceInLine(line, config[element]);
+      }
     });
 }
 
