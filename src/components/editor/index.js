@@ -3,7 +3,7 @@ import React from 'react';
 var CodeMirror = require('codemirror');
 
 /** Base setup */
-require('codemirror/mode/gfm/gfm');
+require('codemirror/mode/markdown/markdown');
 require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/css/css');
 require('codemirror/keymap/sublime');
@@ -29,6 +29,8 @@ require('codemirror/lib/codemirror.css');
 // require('codemirror/theme/elegant.css');
 
 require('styles/editor-light.scss');
+
+const $ = require("jquery");
 
 import CalculatorAddon from './addons/calculator';
 var autopreview = require('./addons/autopreview');
@@ -58,8 +60,11 @@ class EditorComponent extends React.Component {
 
     var doc = CodeMirror(this.refs.noteEditor, {
       mode: {
-        name: "gfm",
-        highlightFormatting: true
+        name: "markdown",
+        highlightFormatting: true,
+        taskLists: true,
+        fencedCodeBlocks: true,
+        strikethrough: true
       },
       lineWrapping: true,
       keyMap: "sublime",
@@ -69,7 +74,21 @@ class EditorComponent extends React.Component {
       styleActiveLine: true,
       extraKeys: {
         "Enter": "newlineAndIndentContinueMarkdownList",
-        "Ctrl-Alt-C": () => CalculatorAddon(doc)
+        "Ctrl-Alt-C": () => CalculatorAddon(doc),
+        "Cmd-=": function() {
+          console.log("AsdasD");
+          var oldSize = parseInt($(".CodeMirror").css("font-size")),
+          newSize = oldSize + 2;
+          $(".CodeMirror").css("font-size", "" + newSize + "px");
+          doc.refresh();
+        },
+        "Cmd--": function() {
+          console.log("AsdasD");
+          var oldSize = parseInt($(".CodeMirror").css("font-size")),
+          newSize = oldSize - 2;
+          $(".CodeMirror").css("font-size", "" + newSize + "px");
+          doc.refresh();
+        }
       }
     });
 

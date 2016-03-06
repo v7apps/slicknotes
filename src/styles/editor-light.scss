@@ -1,7 +1,11 @@
 /* Edit theme for codemirror */
 
-/* Color scheme */
+@mixin monoStyle {
+  font-size: 0.9em;
+  font-family: Monaco, monospace;
+}
 
+/* Color scheme */
 .cm-s-editor-light {
 
   .CodeMirror-lines {
@@ -13,35 +17,36 @@
     color: #2e383c;
     line-height: 1.4375;
     font-family: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
   }
 
   .cm-comment {
-    font-family: Monaco, monospace;
+    @include monoStyle;
     color: #75787b;
   }
 
   .cm-keyword, .cm-property, .cm-formatting-task {
-    font-family: Monaco, monospace;
+    @include monoStyle;
     color: #1d75b3;
   }
 
   .cm-atom, .cm-number {
-    font-family: Monaco, monospace;
+    @include monoStyle;
     color: #75438a;
   }
 
   .cm-node, .cm-tag {
-    font-family: Monaco, monospace;
+    @include monoStyle;
     color: #9c3328;
   }
 
   .cm-string {
-    font-family: Monaco, monospace;
+    @include monoStyle;
     color: #b35e14;
   }
 
   .cm-variable, .cm-qualifier {
-    font-family: Monaco, monospace;
+    @include monoStyle;
     color: #047d65;
   }
 
@@ -65,45 +70,45 @@
   .CodeMirror-guttermarker-subtle { color: #e0e2e5; }
 
   .CodeMirror-cursor {
-    border-color: rgba(155,157,162,0.37);
+    border-color: black;
     z-index: 1;
   }
 
   .cm-header {
     &.cm-header-1 {
-      font-size: 2.0571429rem;
-      margin-bottom: .21999rem;
-      padding-top: .78001rem
+      font-size: 2.0571429em;
+      margin-bottom: .21999em;
+      padding-top: .78001em
     }
 
     &.cm-header-2 {
-      font-size: 1.953125rem;
-      margin-bottom: .1835837rem;
-      padding-top: .8164163rem
+      font-size: 1.953125em;
+      margin-bottom: .1835837em;
+      padding-top: .8164163em
     }
 
     &.cm-header-3 {
-      font-size: 1.6457143rem;
-      margin-bottom: .07599rem;
-      padding-top: .92401rem
+      font-size: 1.6457143em;
+      margin-bottom: .07599em;
+      padding-top: .92401em
     }
 
     &.cm-header-4 {
-      font-size: 1.5625rem;
-      margin-bottom: .546865rem;
-      padding-top: .453135rem
+      font-size: 1.5625em;
+      margin-bottom: .546865em;
+      padding-top: .453135em
     }
 
     &.cm-header-5 {
-      font-size: 1.25rem;
-      margin-bottom: -.56251rem;
-      padding-top: .56251rem
+      font-size: 1.25em;
+      margin-bottom: -.56251em;
+      padding-top: .56251em
     }
 
     &.cm-header-6 {
-      font-size: 1rem;
-      margin-bottom: -.65001rem;
-      padding-top: .65001rem
+      font-size: 1em;
+      margin-bottom: -.65001em;
+      padding-top: .65001em
     }
   }
 
