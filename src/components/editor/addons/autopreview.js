@@ -229,7 +229,7 @@ function autopreview (cm, line) {
             }
         };
 
-    var types = ["image", "atodolist", "math", "header", "anchor"];
+    var types = ["image", "atodolist", "math", "header1", "anchor"];
 
     types.forEach( function(element, index) {
       if( config[element] ) {

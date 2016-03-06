@@ -16,7 +16,13 @@ class SidebarComponent extends React.Component {
 
   componentDidMount() {
     NoteStore.fetchNotes().then(function(notes) {
-      this.setState({notes});
+      if( notes.length > 0 ) {
+        this.setState({notes, activeItem: notes[0]._id});
+        this.props.onSelectItem(notes[0]);
+      }
+      else {
+        this.setState({notes});
+      }
     }.bind(this));
   }
 

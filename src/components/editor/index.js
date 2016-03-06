@@ -3,7 +3,7 @@ import React from 'react';
 var CodeMirror = require('codemirror');
 
 /** Base setup */
-require('codemirror/mode/markdown/markdown');
+require('./mode/markdown');
 require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/css/css');
 require('codemirror/keymap/sublime');

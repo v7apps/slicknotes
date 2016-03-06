@@ -26,23 +26,24 @@
     color: #75787b;
   }
 
-  .cm-hr:after {
+  .CodeMirror-line.hr:after {
     content: "";
-    height: 0px;
-    width: 93%;
-    border-top: 1px dashed #ccc;
     display: block;
     position: absolute;
-    left: 7%;
     top: 50%;
-    margin-top: -1px;
+    width: 100%;
+    left: 0;
+    height: 0px;
+    border-bottom: 2px groove rgba(200, 200, 200, 0.75);
+    color: #ddd;
+    font-size: 10px;
   }
 
-  .cm-formatting-task.cm-property + span {
+  .task-closed {
     text-decoration: line-through;
   }
 
-  .cm-keyword, .cm-property, .cm-formatting-task {
+  .cm-keyword, .cm-property, .cm-formatting-task, .cm-formatting-header {
     color: #1d75b3;
   }
 
