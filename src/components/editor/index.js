@@ -71,7 +71,9 @@ class EditorComponent extends React.Component {
       theme: 'editor-light',
       foldGutter: true,
       highlightSelectionMatches: true,
+      showCursorWhenSelecting: true,
       styleActiveLine: true,
+      addModeClass: true,
       extraKeys: {
         "Enter": "newlineAndIndentContinueMarkdownList",
         "Ctrl-Alt-C": () => CalculatorAddon(doc),

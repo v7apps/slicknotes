@@ -8,6 +8,8 @@
 /* Color scheme */
 .cm-s-editor-light {
 
+  .CodeMirror-selected { background: #cce5fe; }
+
   .CodeMirror-lines {
     padding: 10px 20px 20px;
   }
@@ -21,32 +23,26 @@
   }
 
   .cm-comment {
-    @include monoStyle;
     color: #75787b;
   }
 
   .cm-keyword, .cm-property, .cm-formatting-task {
-    @include monoStyle;
     color: #1d75b3;
   }
 
   .cm-atom, .cm-number {
-    @include monoStyle;
     color: #75438a;
   }
 
   .cm-node, .cm-tag {
-    @include monoStyle;
     color: #9c3328;
   }
 
   .cm-string {
-    @include monoStyle;
     color: #b35e14;
   }
 
   .cm-variable, .cm-qualifier {
-    @include monoStyle;
     color: #047d65;
   }
 
@@ -118,5 +114,9 @@
 
   .cm-cm-overlay.cm-matchhighlight {
     border-bottom: 1px dotted rgba(132, 142, 155, 1.0);
+  }
+
+  span[class^="cm-m-"]:not(.cm-m-markdown) {
+    @include monoStyle;
   }
 }

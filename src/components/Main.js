@@ -28,7 +28,7 @@ class AppComponent extends React.Component {
         // [extract-gfm]
 
     return (
-      <SplitPane split="vertical" minSize="100" defaultSize="250" maxSize="500" className="index">
+      <SplitPane split="vertical" minSize="100" defaultSize="250" maxSize="500">
         <Sidebar onSelectItem={this.onSelectItem.bind(this)}></Sidebar>
         <Editor note={this.state.selectedNote}></Editor>
       </SplitPane>
