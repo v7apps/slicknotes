@@ -29,6 +29,7 @@ class NoteStore extends EventEmitter {
     var Datastore = require('nedb');
     this.db = new Datastore({
       filename: path.join(this.appDataFolder, 'notes.db'),
+      timestampData: true,
       autoload: true
     });
 

@@ -16,6 +16,7 @@ class SidebarComponent extends React.Component {
 
   componentDidMount() {
     NoteStore.fetchNotes().then(function(notes) {
+      console.log(notes);
       if( notes.length > 0 ) {
         this.setState({notes, activeItem: notes[0]._id});
         this.props.onSelectItem(notes[0]);
@@ -32,7 +33,7 @@ class SidebarComponent extends React.Component {
         {this.state.notes.map(function(item, index) {
           return (<div className={classNames('list-item', { active: this.state.activeItem == item._id })} key={item._id} onClick={function(){this.onSelectItem(index)}.bind(this)}>
             <div className="title">{item.title}</div>
-            <div className="date">Last modified: {moment(item.date).fromNow()}</div>
+            <div className="date">Last modified: {moment(item.updatedAt).fromNow()}</div>
           </div>);
         }.bind(this))}
       </div>

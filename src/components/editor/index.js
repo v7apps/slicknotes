@@ -81,14 +81,12 @@ class EditorComponent extends React.Component {
         "Enter": "newlineAndIndentContinueMarkdownList",
         "Ctrl-Alt-C": () => CalculatorAddon(doc),
         "Cmd-=": function() {
-          console.log("AsdasD");
           var oldSize = parseInt($(".CodeMirror").css("font-size")),
           newSize = oldSize + 2;
           $(".CodeMirror").css("font-size", "" + newSize + "px");
           doc.refresh();
         },
         "Cmd--": function() {
-          console.log("AsdasD");
           var oldSize = parseInt($(".CodeMirror").css("font-size")),
           newSize = oldSize - 2;
           $(".CodeMirror").css("font-size", "" + newSize + "px");
@@ -108,6 +106,7 @@ class EditorComponent extends React.Component {
   }
 
   noteSelectedChanged(note) {
+    this.switchingDocument = true;
     var data = NoteStore.getSelectedNote();
 
     this.note = data.note;
