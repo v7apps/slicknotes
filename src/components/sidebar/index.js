@@ -67,7 +67,7 @@ class SidebarComponent extends React.Component {
     else {
       var obj = self.state.notesMain.filter(function ( obj ) {
       // console.log(obj.title.indexOf(self.props.searchText));
-    return obj.title.indexOf(self.props.searchText) >= 0;
+    return obj.title.toLowerCase().indexOf(self.props.searchText.toLowerCase()) >= 0;
     });
     
     this.setState({notes: obj});
