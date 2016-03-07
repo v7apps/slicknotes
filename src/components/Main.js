@@ -28,15 +28,15 @@ class AppComponent extends React.Component {
   }
 
   render() {
-        // [extract-gfm]
-
     return (
       <div id="app-container" style={{display: "flex", flexDirection: "column"}}>
         <div id="masthead" style={{height: 44}}>
           <span className="title">SlickNotes</span>
           <input ref="search" className="quick-search" type="text" placeholder="Quick search" onChange={this.onChangeSearchText.bind(this)}/>
           <div className="spacer" style={{flex: 1}}></div>
-          <div className="add-button" onClick={this.createNewNote.bind(this)}>+</div>
+          <div className="button add-button" onClick={this.createNewNote.bind(this)}>
+            <i className="fa fa-plus-circle"></i>
+          </div>
         </div>
         <SplitPane split="vertical" minSize="100" defaultSize="250" maxSize="500" style={{flex: 1}}>
           <Sidebar onSelectItem={this.onSelectItem.bind(this)} searchText={this.state.searchText}></Sidebar>

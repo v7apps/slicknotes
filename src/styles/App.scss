@@ -20,6 +20,7 @@ html, body {
 
 * {
   -webkit-user-select: none;
+  // cursor: default;
 }
 
 html {
@@ -84,17 +85,9 @@ input:focus {
   }
 
   .add-button {
-    width: 44px;
-    text-align: center;
-    align-self: stretch;
-    line-height: 44px;
-    cursor: pointer;
-    font-size: 18px;
-    color: #555;
-
-    &:hover {
-      background-color: #ccc;
-    }
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 13px;
   }
 }
 
@@ -122,6 +115,25 @@ input:focus {
     bottom: 0;
     right: 0;
     overflow: hidden;
+
+    .title-toolbar {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      height: 44px;
+
+      // .button {
+      //   padding: 9px;
+      //   font-size: 18px;
+      //   transition: all .2s ease-in-out;
+
+      //   &:hover {
+      //     background-color: transparent;
+      //     transform: scale(1.2, 1.2);
+      //   }
+      // }
+    }
+
   /*  -webkit-user-select: text;*/
     /*background-color: #272822;*/
 
@@ -147,6 +159,29 @@ input:focus {
 
 
   }
+}
+
+.button {
+  cursor: default;
+  color: #555;
+  padding: 12px;
+  // transition: all .2s ease-in-out;
+  font-size: 14px;
+
+  &:focus, &:active {
+    color: #888;
+    // background-color: rgba(200, 200, 200, 0.5);
+  }
+
+  .fa {
+    // padding-right: 10px;
+    font-size: 18px;
+  }
+
+  // &:hover {
+  //   background-color: transparent;
+  //   transform: scale(1.2, 1.2);
+  // }
 }
 
 .list-item {

@@ -29,13 +29,13 @@ class SidebarComponent extends React.Component {
   refreshNotes() {
     NoteStore.fetchNotes().then(function(notes) {
       console.log(notes);
-      // if( notes.length == 0 || this.state.activeItem >= 0) {
-        this.setState({notes: notes, notesMain: notes});
-      // }
-      // else {
-      //   this.setState({notes, activeItem: notes[0]._id});
-      //   this.props.onSelectItem(notes[0]);
-      // }
+      if( notes.length == 0 || this.state.activeItem !== undefined) {
+        this.setState({notes});
+      }
+      else {
+        this.setState({notes, activeItem: notes[0]._id});
+        this.props.onSelectItem(notes[0]);
+      }
     }.bind(this));
   }
 
