@@ -30,7 +30,7 @@ class SidebarComponent extends React.Component {
     NoteStore.fetchNotes().then(function(notes) {
       console.log(notes);
       if( notes.length == 0 || this.state.activeItem !== undefined) {
-        this.setState({notes});
+        this.setState({notes: notes, notesMain: notes});
       }
       else {
         this.setState({notes, activeItem: notes[0]._id});
