@@ -118,6 +118,18 @@ class NoteStore extends EventEmitter {
 
   }
 
+  delete(note) {
+
+    this.db.remove({ _id: note._id}, {}, function (err, numRemoved) {
+      if (err) {
+        throw err;
+      }
+      else {
+        this.emit("LIST_CHANGED_EVENT");
+      }
+    }.bind(this));
+  }
+
 }
 
 let single = new NoteStore();

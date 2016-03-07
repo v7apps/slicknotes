@@ -27,7 +27,7 @@ new WebpackDevServer(webpack(config), config.devServer)
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600, "titleBarStyle": "visible"});
+  mainWindow = new BrowserWindow({width: 800, height: 600, "titleBarStyle": "hidden"});
 
   // and load the index.html of the app.
   // mainWindow.loadURL('file://' + __dirname + '/dist/index.html');
