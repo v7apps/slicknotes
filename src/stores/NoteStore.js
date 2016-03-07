@@ -43,7 +43,7 @@ class NoteStore extends EventEmitter {
 
   fetchNotes() {
     return new Promise(function (resolve, reject) {
-      this.db.find({}).sort({ updatedAt: 1 }).exec(function (err, docs) {
+      this.db.find({}).sort({ updatedAt: -1 }).exec(function (err, docs) {
         if(err) {
           return reject(err);
         }
@@ -116,6 +116,18 @@ class NoteStore extends EventEmitter {
       this.emit("SELECTION_CHANGED_EVENT");
     }.bind(this));
 
+  }
+
+  delete(note) {
+
+    this.db.remove({ _id: note._id}, {}, function (err, numRemoved) {
+      if (err) {
+        throw err;
+      }
+      else {
+        this.emit("LIST_CHANGED_EVENT");
+      }
+    }.bind(this));
   }
 
 }
