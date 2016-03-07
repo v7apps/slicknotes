@@ -43,7 +43,7 @@ class NoteStore extends EventEmitter {
 
   fetchNotes() {
     return new Promise(function (resolve, reject) {
-      this.db.find({}, function (err, docs) {
+      this.db.find({}).sort({ updatedAt: 1 }).exec(function (err, docs) {
         if(err) {
           return reject(err);
         }
@@ -93,6 +93,7 @@ class NoteStore extends EventEmitter {
           }.bind(this));
         }
         else {
+          this.emit("LIST_CHANGED_EVENT");
           resolve(newNote);
         }
 

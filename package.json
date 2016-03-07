@@ -72,9 +72,11 @@
     "jquery": "^2.2.1",
     "mathjs": "^2.7.0",
     "moment": "^2.11.2",
+    "mousetrap": "^1.5.3",
     "nedb": "^1.8.0",
     "normalize.css": "^3.0.3",
     "react": "^0.14.0",
-    "react-dom": "^0.14.0"
+    "react-dom": "^0.14.0",
+    "typopro-web": "^3.4.3"
   }
 }
