@@ -43,7 +43,7 @@ class NoteStore extends EventEmitter {
 
   fetchNotes() {
     return new Promise(function (resolve, reject) {
-      this.db.find({}).sort({ updatedAt: 1 }).exec(function (err, docs) {
+      this.db.find({}).sort({ updatedAt: -1 }).exec(function (err, docs) {
         if(err) {
           return reject(err);
         }
