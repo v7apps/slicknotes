@@ -54,6 +54,23 @@ class NoteStore extends EventEmitter {
     }.bind(this));
   }
 
+  searchNotes(query) {
+    var regex = '/' + query + '/';
+    console.log(regex);
+    return new Promise(function (resolve, reject) {
+      this.db.find({title: regex}).sort({ updatedAt: -1 }).exec(function (err, docs) {
+        if(err) {
+          console.log(err);
+          return reject(err);
+        }
+        else {
+
+          resolve(docs);
+        }
+      });
+    }.bind(this));
+  }
+
   getSelectedNote() {
     return {
       note: this.selectedNote,
@@ -76,6 +93,7 @@ class NoteStore extends EventEmitter {
   }
 
   save(note, contents) {
+    console.log(note);
     return new Promise(function (resolve, reject) {
       var newNote = this.db.update({_id: note._id}, note, function (err, newNote) {
         if(err) {

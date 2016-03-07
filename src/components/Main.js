@@ -21,7 +21,10 @@ class AppComponent extends React.Component {
 
   constructor() {
     super();
-    this.state = {};
+    this.state = {
+      notes: [],
+      searchText: ''
+    };
   }
 
   render() {
@@ -31,12 +34,12 @@ class AppComponent extends React.Component {
       <div id="app-container" style={{display: "flex", flexDirection: "column"}}>
         <div id="masthead" style={{height: 44}}>
           <span className="title">SlickNotes</span>
-          <input className="quick-search" type="text" placeholder="Quick search" />
+          <input ref="search" className="quick-search" type="text" placeholder="Quick search" onChange={this.onChangeSearchText.bind(this)}/>
           <div className="spacer" style={{flex: 1}}></div>
           <div className="add-button" onClick={this.createNewNote.bind(this)}>+</div>
         </div>
         <SplitPane split="vertical" minSize="100" defaultSize="250" maxSize="500" style={{flex: 1}}>
-          <Sidebar onSelectItem={this.onSelectItem.bind(this)}></Sidebar>
+          <Sidebar onSelectItem={this.onSelectItem.bind(this)} searchText={this.state.searchText}></Sidebar>
           <Editor note={this.state.selectedNote}></Editor>
         </SplitPane>
       </div>
@@ -45,6 +48,12 @@ class AppComponent extends React.Component {
 
   onSelectItem(item) {
     NoteStore.select(item);
+  }
+
+  onChangeSearchText() {
+
+    console.log(this.refs.search.value);
+    this.setState({searchText: this.refs.search.value});
   }
 
   createNewNote() {

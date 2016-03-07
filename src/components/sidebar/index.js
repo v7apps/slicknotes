@@ -11,7 +11,7 @@ class SidebarComponent extends React.Component {
 
   constructor() {
     super();
-    this.state = {notes: []};
+    this.state = {notes: [], searchText: '', notesMain:[]};
   }
 
   componentDidMount() {
@@ -19,11 +19,18 @@ class SidebarComponent extends React.Component {
     NoteStore.on("LIST_CHANGED_EVENT", this.refreshNotes.bind(this));
   }
 
+  componentDidUpdate() {
+    if (this.state.searchText !== this.props.searchText) {
+      this.onSearch();
+    }
+    
+  }
+
   refreshNotes() {
     NoteStore.fetchNotes().then(function(notes) {
       console.log(notes);
       // if( notes.length == 0 || this.state.activeItem >= 0) {
-        this.setState({notes});
+        this.setState({notes: notes, notesMain: notes});
       // }
       // else {
       //   this.setState({notes, activeItem: notes[0]._id});
@@ -49,6 +56,24 @@ class SidebarComponent extends React.Component {
     var item = this.state.notes[index];
     this.setState({activeItem: item._id});
     this.props.onSelectItem(item);
+  }
+
+  onSearch() {
+    var self = this;
+    self.setState({searchText: self.props.searchText});
+    if (self.props.searchText.length == 0) {
+      this.refreshNotes();
+    }
+    else {
+      var obj = self.state.notesMain.filter(function ( obj ) {
+      // console.log(obj.title.indexOf(self.props.searchText));
+    return obj.title.indexOf(self.props.searchText) >= 0;
+    });
+    
+    this.setState({notes: obj});
+    }
+    
+    
   }
 
 }
