@@ -24,7 +24,7 @@ require('codemirror/addon/selection/active-line');
 // require('codemirror/addon/scroll/simplescrollbars.css');
 
 require('codemirror/lib/codemirror.css');
-require ('font-awesome/css/font-awesome.min.css')
+require('font-awesome/css/font-awesome.min.css');
 
 /** Themes */
 // require('codemirror/theme/neo.css');
@@ -49,13 +49,15 @@ class EditorComponent extends React.Component {
   render() {
     return (
       <div className="editor">
-      <div style={{flexDirection:'row'}}>
-        <div className="note-title" style={{display:'flex'}}>
-
-          <input ref="noteTitle" className="note-title-input" placeholder="Untitled Note" onChange={this.onTextChange.bind(this)} />
-          <i className="fa fa-trash-o fa-sm" onClick={this.onDeleteNote}></i>
-
-        </div>
+        <div style={{flexDirection:'row'}}>
+          <div className="note-title" style={{display:'flex'}}>
+            <input ref="noteTitle" className="note-title-input" placeholder="Untitled Note" onChange={this.onTextChange.bind(this)} />
+          </div>
+          <div className="title-toolbar">
+            <div className="button" onClick={this.onDeleteNote}>
+              <i className="fa fa-trash"></i>
+            </div>
+          </div>
         </div>
         <div ref="noteEditor" className="note-editor">
         </div>
@@ -157,7 +159,7 @@ class EditorComponent extends React.Component {
     if (answer) {
         NoteStore.delete(data.note);
     }
-    
+
   }
 
 }
