@@ -33,7 +33,10 @@ require('font-awesome/css/font-awesome.min.css');
 
 require('styles/editor-light.scss');
 
+
 const $ = require("jquery");
+
+const classNames = require('classnames');
 
 import CalculatorAddon from './addons/calculator';
 var autopreview = require('./addons/autopreview');
@@ -44,6 +47,7 @@ class EditorComponent extends React.Component {
 
   constructor() {
     super();
+    this.state = {toc: []};
   }
 
   render() {
@@ -59,7 +63,17 @@ class EditorComponent extends React.Component {
             </div>
           </div>
         </div>
-        <div ref="noteEditor" className="note-editor">
+        <div style={{ flexDirection:'row', display:'flex'}}>
+
+        <div ref="noteEditor" className="note-editor" style={{width:'75%', display:'flex'}}>
+          </div>
+          <div className="list" style={{display:'flex', flexDirection:'column'}}>
+            {this.state.toc.map(function(item, index) {
+              return (<div className={classNames('list-item', { active: this.state.activeItem == item})} key={item} onClick={function(){this.onSelectTocItem(item)}.bind(this)}>
+                <div className="title">{item.replace('#### ', '')}</div>
+              </div>);
+            }.bind(this))}
+      </div>
         </div>
       </div>
     );
@@ -125,21 +139,40 @@ class EditorComponent extends React.Component {
     this.document.setValue(data.contents);
 
     this.document.focus();
+
+    var array = data.contents.split("\n");
+    this.parseToc(array);
   }
 
   onTextChange() {
+    
     if( this.switchingDocument ) {
       this.switchingDocument = false;
       return;
     }
 
     var newContent = this.document.getValue();
+
+    console.log('tokens');
+    
+    var array = newContent.split("\n");
+    this.parseToc(array);
+
     if( this.originalContent == newContent ) {
       newContent = null;
     }
 
     this.note.title = this.refs.noteTitle.value;
     NoteStore.save(this.note, newContent);
+  }
+
+  parseToc (array) {
+    var obj = array.filter(function ( obj ) {
+      return obj.startsWith("#### ");
+    });
+    
+    this.setState({toc: obj});
+    console.log(this.state.toc);
   }
 
   refreshPreview() {
@@ -160,6 +193,11 @@ class EditorComponent extends React.Component {
         NoteStore.delete(data.note);
     }
 
+  }
+
+  onSelectTocItem (item) {
+
+    console.log(item);
   }
 
 }
