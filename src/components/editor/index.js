@@ -70,7 +70,7 @@ class EditorComponent extends React.Component {
           <div className="list" style={{display:'flex', flexDirection:'column'}}>
             {this.state.toc.map(function(item, index) {
               return (<div className={classNames('list-item', { active: this.state.activeItem == item})} key={item} onClick={function(){this.onSelectTocItem(item)}.bind(this)}>
-                <div className="title">{item.replace('#### ', '')}</div>
+                <div className="title"><a href='#'> {item.replace('#### ', '')}</a></div>
               </div>);
             }.bind(this))}
       </div>
@@ -140,8 +140,6 @@ class EditorComponent extends React.Component {
 
     this.document.focus();
 
-    var array = data.contents.split("\n");
-    this.parseToc(array);
   }
 
   onTextChange() {
@@ -154,9 +152,13 @@ class EditorComponent extends React.Component {
     var newContent = this.document.getValue();
 
     console.log('tokens');
-    
-    var array = newContent.split("\n");
-    this.parseToc(array);
+
+
+    // Todo : use this code instead of split
+    // this.document.eachLine(function(line) {
+    //   // /^([\#]+) (.+)/gi
+    //   autopreview(this.document, line);
+    // }.bind(this));
 
     if( this.originalContent == newContent ) {
       newContent = null;
@@ -178,9 +180,16 @@ class EditorComponent extends React.Component {
   refreshPreview() {
     // console.log("cursorActivity");
     // console.log(this.document.getViewport());
+    var array = [];
     this.document.eachLine(function(line) {
+      console.log(line.text);
+      if (line.text.match(/^([\#]+) (.+)/gi)) {
+        array.push(line.text);
+      }
       autopreview(this.document, line);
     }.bind(this));
+    console.log(array);
+    this.setState({toc: array});
   }
 
   onDeleteNote () {
