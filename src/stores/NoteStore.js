@@ -41,6 +41,10 @@ class NoteStore extends EventEmitter {
     this.removeListener(event, callback);
   }
 
+  getAllNotes () {
+    return this.docs == undefined ? [] : this.docs;
+  }
+
   fetchNotes() {
     return new Promise(function (resolve, reject) {
       this.db.find({}).sort({ updatedAt: -1 }).exec(function (err, docs) {
@@ -48,9 +52,10 @@ class NoteStore extends EventEmitter {
           return reject(err);
         }
         else {
+          this.docs = docs;
           resolve(docs);
         }
-      });
+      }.bind(this));
     }.bind(this));
   }
 
@@ -78,9 +83,16 @@ class NoteStore extends EventEmitter {
     };
   }
 
-  create() {
+  removeSelectedNote() {
+    this.selectedNote = null;
+    this.selectedNoteContents = null;
+
+  }
+
+  create(data) {
+    var date = new Date().toString;
     return new Promise(function (resolve, reject) {
-      var newNote = this.db.insert({}, function (err, newNote) {
+      var newNote = this.db.insert(data, function (err, newNote) {
         if(err) {
           return reject(err);
         }
@@ -144,6 +156,7 @@ class NoteStore extends EventEmitter {
       }
       else {
         this.emit("LIST_CHANGED_EVENT");
+        this.emit("ITEM_DELETE_EVENT");
       }
     }.bind(this));
   }

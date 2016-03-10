@@ -50,7 +50,12 @@ class EditorComponent extends React.Component {
     this.state = {toc: []};
   }
 
+  editorArea () {
+    
+  }
+
   render() {
+
     return (
       <div className="editor">
         <div style={{flexDirection:'row'}}>
@@ -58,7 +63,7 @@ class EditorComponent extends React.Component {
             <input ref="noteTitle" className="note-title-input" placeholder="Untitled Note" onChange={this.onTextChange.bind(this)} />
           </div>
           <div className="title-toolbar">
-            <div className="button" onClick={this.onDeleteNote}>
+            <div className="button" onClick={this.onDeleteNote.bind(this)}>
               <i className="fa fa-trash"></i>
             </div>
           </div>
@@ -69,8 +74,8 @@ class EditorComponent extends React.Component {
           </div>
           <div className="list" style={{display:'flex', flexDirection:'column'}}>
             {this.state.toc.map(function(item, index) {
-              return (<div className={classNames('list-item', { active: this.state.activeItem == item})} key={item} onClick={function(){this.onSelectTocItem(item)}.bind(this)}>
-                <div className="title"><a href='#'> {item.replace('#### ', '')}</a></div>
+              return (<div className={classNames('list-item', { active: this.state.activeItem == item})} key={item.text} onClick={function(){this.onSelectTocItem(item)}.bind(this)}>
+                <div className="title"><a href='#'> {item.text}</a></div>
               </div>);
             }.bind(this))}
       </div>
@@ -124,7 +129,7 @@ class EditorComponent extends React.Component {
   }
 
   componentWillUnmount() {
-    NoteStore.un("SELECTION_CHANGED_EVENT");
+    //NoteStore.un("SELECTION_CHANGED_EVENT");
   }
 
   noteSelectedChanged(note) {
@@ -132,9 +137,11 @@ class EditorComponent extends React.Component {
     var data = NoteStore.getSelectedNote();
 
     this.note = data.note;
+    console.log(data);
 
     this.originalContent = data.contents;
-
+    console.log(this.refs);
+    console.log(this.refs.noteTitle);
     this.refs.noteTitle.value = this.note.title;
     this.document.setValue(data.contents);
 
@@ -148,24 +155,15 @@ class EditorComponent extends React.Component {
       this.switchingDocument = false;
       return;
     }
-
     var newContent = this.document.getValue();
-
-    console.log('tokens');
-
-
-    // Todo : use this code instead of split
-    // this.document.eachLine(function(line) {
-    //   // /^([\#]+) (.+)/gi
-    //   autopreview(this.document, line);
-    // }.bind(this));
-
+  
     if( this.originalContent == newContent ) {
-      newContent = null;
-    }
+        newContent = null;
+      }
 
-    this.note.title = this.refs.noteTitle.value;
-    NoteStore.save(this.note, newContent);
+      this.note.title = this.refs.noteTitle.value;
+      NoteStore.save(this.note, newContent);
+
   }
 
   parseToc (array) {
@@ -182,14 +180,16 @@ class EditorComponent extends React.Component {
     // console.log(this.document.getViewport());
     var array = [];
     this.document.eachLine(function(line) {
-      console.log(line.text);
+      // console.log(line.text);
       if (line.text.match(/^([\#]+) (.+)/gi)) {
-        array.push(line.text);
+        var data = {"text": line.text, number: this.document.getLineNumber(line)};
+        array.push(data);
       }
       autopreview(this.document, line);
     }.bind(this));
     console.log(array);
     this.setState({toc: array});
+    this.initSpellcheck(this.document);
   }
 
   onDeleteNote () {
@@ -199,7 +199,17 @@ class EditorComponent extends React.Component {
     var answer = confirm('Are you sure?');
 
     if (answer) {
+
         NoteStore.delete(data.note);
+        NoteStore.removeSelectedNote();
+
+        this.document.setValue('');
+        this.document.focus();
+        this.refs.noteTitle.value = '';
+        this.note = null;
+        this.originalContent = null;
+        this.refreshPreview();
+
     }
 
   }
@@ -207,7 +217,45 @@ class EditorComponent extends React.Component {
   onSelectTocItem (item) {
 
     console.log(item);
+    this.document.scrollIntoView(item.number, 0);
+    // this.document.setCursor(item.number, 0);
   }
+
+  initSpellcheck (CodeMirror) {
+    // Create overlay
+    // Inspiration: https://github.com/NextStepWebs/codemirror-spell-checker/blob/master/src/js/spell-checker.js
+    CodeMirror.defineMode("spellchecker", function (config, parserConfig) {
+        var wordDelimiters = "!\"#$%&()*+,-./:;<=>?@[\\]^_`{|}~ \t",
+            overlay = {
+            token: function(stream, state) {
+              var ch = stream.peek(),
+                        word = "",
+                        isMisspelledFunc = window.abrDoc.getSpellcheckFunc();
+                    if (!isMisspelledFunc) {
+                        return null;
+                    }
+              if (wordDelimiters.includes(ch)) {
+                stream.next();
+                return null;
+              }
+              while ((ch = stream.peek()) != null && !wordDelimiters.includes(ch)) {
+                word += ch;
+                stream.next();
+              }
+                    word = word.replace(/[’ʼ]/g, "'"); // Alternative apostrophes
+              if (isMisspelledFunc && isMisspelledFunc(word)) {
+                return "spell-error"; // CSS class: cm-spell-error
+                    }
+              return null;
+            }
+          },
+            mode = this.document.getMode(config, {
+                name: "gfm",
+                highlightFormatting: true
+            });
+        return this.document.overlayMode(mode, overlay, true);
+    });
+}
 
 }
 
