@@ -82,6 +82,7 @@
     "normalize.css": "^3.0.3",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",
+    "spellchecker": "^3.2.3",
     "typopro-web": "^3.4.3"
   }
 }

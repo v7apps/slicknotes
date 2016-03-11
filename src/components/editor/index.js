@@ -34,6 +34,7 @@ require('font-awesome/css/font-awesome.min.css');
 
 require('styles/editor-light.scss');
 
+var SpellChecker = require ('spellchecker');
 
 const $ = require("jquery");
 
@@ -228,6 +229,7 @@ class EditorComponent extends React.Component {
               }
               word = word.replace(/[’ʼ]/g, "'");
               if (SpellChecker.isMisspelled(word)) {
+              // if (true) {
                 return "spell-error";
               }
               return null;
