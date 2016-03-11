@@ -23,11 +23,21 @@ class AppComponent extends React.Component {
     super();
     this.state = {
       notes: [],
-      searchText: ''
+      searchText: '',
+      itemSelected: false
     };
   }
 
   render() {
+
+    var editorArea;
+    if (this.state.itemSelected) {
+      editorArea = <Editor note={this.state.selectedNote}></Editor>;
+    }
+    else {
+      editorArea = <p> No Note Selected </p>
+      
+    }
     return (
       <div id="app-container" style={{display: "flex", flexDirection: "column"}}>
         <div id="masthead" style={{height: 44}}>
@@ -40,13 +50,28 @@ class AppComponent extends React.Component {
         </div>
         <SplitPane split="vertical" minSize="100" defaultSize="250" maxSize="500" style={{flex: 1}}>
           <Sidebar onSelectItem={this.onSelectItem.bind(this)} searchText={this.state.searchText}></Sidebar>
-          <Editor note={this.state.selectedNote}></Editor>
+          {editorArea}
         </SplitPane>
       </div>
     );
   }
 
+  componentDidMount() {
+    
+    
+    NoteStore.on("ITEM_DELETE_EVENT", this.refreshList.bind(this));
+  }
+
+  refreshList () {
+  
+    this.setState({itemSelected: false});
+  
+  }
+
   onSelectItem(item) {
+    
+    this.setState({itemSelected: true});
+    setInterval(1000);
     NoteStore.select(item);
   }
 
@@ -57,7 +82,12 @@ class AppComponent extends React.Component {
   }
 
   createNewNote() {
-    NoteStore.create({}).then(function(note) {
+
+    var dateFormat = require('dateformat');
+    var now = new Date();
+    
+    var date = dateFormat(now, "dddd, mmmm dS, yyyy, h:MM:ss");
+    NoteStore.create({'title': 'New note - ' + date}).then(function(note) {
       NoteStore.select(note);
     }.bind(this));
   }

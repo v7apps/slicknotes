@@ -20,6 +20,7 @@ require('codemirror/addon/dialog/dialog.css');
 // require('codemirror/addon/fold/markdown-fold');
 // require('codemirror/addon/fold/foldgutter.css');
 require('codemirror/addon/selection/active-line');
+require('codemirror/addon/mode/overlay');
 // require('codemirror/addon/scroll/simplescrollbars');
 // require('codemirror/addon/scroll/simplescrollbars.css');
 
@@ -33,7 +34,10 @@ require('font-awesome/css/font-awesome.min.css');
 
 require('styles/editor-light.scss');
 
+
 const $ = require("jquery");
+
+const classNames = require('classnames');
 
 import CalculatorAddon from './addons/calculator';
 var autopreview = require('./addons/autopreview');
@@ -44,9 +48,11 @@ class EditorComponent extends React.Component {
 
   constructor() {
     super();
+    this.state = {toc: []};
   }
 
   render() {
+
     return (
       <div className="editor">
         <div style={{flexDirection:'row'}}>
@@ -54,12 +60,22 @@ class EditorComponent extends React.Component {
             <input ref="noteTitle" className="note-title-input" placeholder="Untitled Note" onChange={this.onTextChange.bind(this)} />
           </div>
           <div className="title-toolbar">
-            <div className="button" onClick={this.onDeleteNote}>
+            <div className="button" onClick={this.onDeleteNote.bind(this)}>
               <i className="fa fa-trash"></i>
             </div>
           </div>
         </div>
-        <div ref="noteEditor" className="note-editor">
+        <div style={{ flexDirection:'row', display:'flex'}}>
+
+        <div ref="noteEditor" className="note-editor" style={{width:'75%', display:'flex'}}>
+          </div>
+          <div className="list" style={{display:'flex', flexDirection:'column'}}>
+            {this.state.toc.map(function(item, index) {
+              return (<div className={classNames('list-item', { active: this.state.activeItem == item})} key={item.text} onClick={function(){this.onSelectTocItem(item)}.bind(this)}>
+                <div className="title"><a href='#'> {item.text}</a></div>
+              </div>);
+            }.bind(this))}
+      </div>
         </div>
       </div>
     );
@@ -67,14 +83,11 @@ class EditorComponent extends React.Component {
 
   componentDidMount() {
     NoteStore.on("SELECTION_CHANGED_EVENT", this.noteSelectedChanged.bind(this));
+    this.initSpellcheck();
 
     var doc = CodeMirror(this.refs.noteEditor, {
       mode: {
-        name: "markdown",
-        highlightFormatting: true,
-        taskLists: true,
-        fencedCodeBlocks: true,
-        strikethrough: true
+        name: "spell-checker"
       },
       lineWrapping: true,
       keyMap: "sublime",
@@ -110,7 +123,7 @@ class EditorComponent extends React.Component {
   }
 
   componentWillUnmount() {
-    NoteStore.un("SELECTION_CHANGED_EVENT");
+    //NoteStore.un("SELECTION_CHANGED_EVENT");
   }
 
   noteSelectedChanged(note) {
@@ -118,49 +131,118 @@ class EditorComponent extends React.Component {
     var data = NoteStore.getSelectedNote();
 
     this.note = data.note;
-
+    
     this.originalContent = data.contents;
-
+    
     this.refs.noteTitle.value = this.note.title;
     this.document.setValue(data.contents);
 
     this.document.focus();
+
   }
 
   onTextChange() {
+    
     if( this.switchingDocument ) {
       this.switchingDocument = false;
       return;
     }
-
     var newContent = this.document.getValue();
+  
     if( this.originalContent == newContent ) {
-      newContent = null;
-    }
+        newContent = null;
+      }
 
-    this.note.title = this.refs.noteTitle.value;
-    NoteStore.save(this.note, newContent);
+      this.note.title = this.refs.noteTitle.value;
+      NoteStore.save(this.note, newContent);
+
+  }
+
+  parseToc (array) {
+    var obj = array.filter(function ( obj ) {
+      return obj.startsWith("#### ");
+    });
+    
+    this.setState({toc: obj});
+    
   }
 
   refreshPreview() {
-    // console.log("cursorActivity");
-    // console.log(this.document.getViewport());
+    
+    var array = [];
     this.document.eachLine(function(line) {
+      
+      if (line.text.match(/^([\#]+) (.+)/gi)) {
+        var data = {"text": line.text, number: this.document.getLineNumber(line)};
+        array.push(data);
+      }
       autopreview(this.document, line);
     }.bind(this));
+    this.setState({toc: array});
+    
   }
 
   onDeleteNote () {
     var data = NoteStore.getSelectedNote();
-    console.log('delete note');
-    console.log(data);
+    
     var answer = confirm('Are you sure?');
 
     if (answer) {
+
         NoteStore.delete(data.note);
+        NoteStore.removeSelectedNote();
+
+        this.document.setValue('');
+        this.document.focus();
+        this.refs.noteTitle.value = '';
+        this.note = null;
+        this.originalContent = null;
+        this.refreshPreview();
+
     }
 
   }
+
+  onSelectTocItem (item) {
+
+    this.document.scrollIntoView(item.number, 0);
+    // this.document.setCursor(item.number, 0);
+  }
+
+  initSpellcheck () {
+    CodeMirror.defineMode("spell-checker", function (config, parserConfig) {
+      console.log('define mode');
+        var wordDelimiters = "!\"#$%&()*+,-./:;<=>?@[\\]^_`{|}~ \t",
+            overlay = {
+            token: function(stream, state) {
+              var ch = stream.peek(),
+                        word = "";
+
+              if (wordDelimiters.includes(ch)) {
+                stream.next();
+                return null;
+              }
+              while ((ch = stream.peek()) != null && !wordDelimiters.includes(ch)) {
+                word += ch;
+                stream.next();
+              }
+              word = word.replace(/[’ʼ]/g, "'");
+              if (SpellChecker.isMisspelled(word)) {
+                return "spell-error";
+              }
+              return null;
+            }
+          },
+        mode = CodeMirror.getMode(config, {
+          name: "markdown",
+          highlightFormatting: true,
+          taskLists: true,
+          fencedCodeBlocks: true,
+          strikethrough: true
+        });
+        return CodeMirror.overlayMode(mode, overlay, true);
+    });
+}
 
 }
 
