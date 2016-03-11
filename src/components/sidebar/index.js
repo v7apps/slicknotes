@@ -28,7 +28,7 @@ class SidebarComponent extends React.Component {
 
   refreshNotes() {
     NoteStore.fetchNotes().then(function(notes) {
-      console.log(notes);
+      
       if( notes.length == 0 || this.state.activeItem !== undefined) {
         this.setState({notes: notes, notesMain: notes});
       }

@@ -105,7 +105,7 @@ class NoteStore extends EventEmitter {
   }
 
   save(note, contents) {
-    console.log(note);
+
     return new Promise(function (resolve, reject) {
       var newNote = this.db.update({_id: note._id}, note, function (err, newNote) {
         if(err) {
@@ -116,7 +116,6 @@ class NoteStore extends EventEmitter {
           fs.writeFile(notePath, contents, function(err) {
             if (err) throw err;
 
-            console.log('It\'s saved!');
             this.emit("LIST_CHANGED_EVENT");
             resolve(newNote);
 

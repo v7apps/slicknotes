@@ -20,6 +20,7 @@ require('codemirror/addon/dialog/dialog.css');
 // require('codemirror/addon/fold/markdown-fold');
 // require('codemirror/addon/fold/foldgutter.css');
 require('codemirror/addon/selection/active-line');
+require('codemirror/addon/mode/overlay');
 // require('codemirror/addon/scroll/simplescrollbars');
 // require('codemirror/addon/scroll/simplescrollbars.css');
 
@@ -48,10 +49,6 @@ class EditorComponent extends React.Component {
   constructor() {
     super();
     this.state = {toc: []};
-  }
-
-  editorArea () {
-    
   }
 
   render() {
@@ -86,14 +83,11 @@ class EditorComponent extends React.Component {
 
   componentDidMount() {
     NoteStore.on("SELECTION_CHANGED_EVENT", this.noteSelectedChanged.bind(this));
+    this.initSpellcheck();
 
     var doc = CodeMirror(this.refs.noteEditor, {
       mode: {
-        name: "markdown",
-        highlightFormatting: true,
-        taskLists: true,
-        fencedCodeBlocks: true,
-        strikethrough: true
+        name: "spell-checker"
       },
       lineWrapping: true,
       keyMap: "sublime",
@@ -137,11 +131,9 @@ class EditorComponent extends React.Component {
     var data = NoteStore.getSelectedNote();
 
     this.note = data.note;
-    console.log(data);
-
+    
     this.originalContent = data.contents;
-    console.log(this.refs);
-    console.log(this.refs.noteTitle);
+    
     this.refs.noteTitle.value = this.note.title;
     this.document.setValue(data.contents);
 
@@ -172,30 +164,27 @@ class EditorComponent extends React.Component {
     });
     
     this.setState({toc: obj});
-    console.log(this.state.toc);
+    
   }
 
   refreshPreview() {
-    // console.log("cursorActivity");
-    // console.log(this.document.getViewport());
+    
     var array = [];
     this.document.eachLine(function(line) {
-      // console.log(line.text);
+      
       if (line.text.match(/^([\#]+) (.+)/gi)) {
         var data = {"text": line.text, number: this.document.getLineNumber(line)};
         array.push(data);
       }
       autopreview(this.document, line);
     }.bind(this));
-    console.log(array);
     this.setState({toc: array});
-    this.initSpellcheck(this.document);
+    
   }
 
   onDeleteNote () {
     var data = NoteStore.getSelectedNote();
-    console.log('delete note');
-    console.log(data);
+    
     var answer = confirm('Are you sure?');
 
     if (answer) {
@@ -216,24 +205,19 @@ class EditorComponent extends React.Component {
 
   onSelectTocItem (item) {
 
-    console.log(item);
     this.document.scrollIntoView(item.number, 0);
     // this.document.setCursor(item.number, 0);
   }
 
-  initSpellcheck (CodeMirror) {
-    // Create overlay
-    // Inspiration: https://github.com/NextStepWebs/codemirror-spell-checker/blob/master/src/js/spell-checker.js
-    CodeMirror.defineMode("spellchecker", function (config, parserConfig) {
+  initSpellcheck () {
+    CodeMirror.defineMode("spell-checker", function (config, parserConfig) {
+      console.log('define mode');
         var wordDelimiters = "!\"#$%&()*+,-./:;<=>?@[\\]^_`{|}~ \t",
             overlay = {
             token: function(stream, state) {
               var ch = stream.peek(),
-                        word = "",
-                        isMisspelledFunc = window.abrDoc.getSpellcheckFunc();
-                    if (!isMisspelledFunc) {
-                        return null;
-                    }
+                        word = "";
+
               if (wordDelimiters.includes(ch)) {
                 stream.next();
                 return null;
@@ -242,18 +226,21 @@ class EditorComponent extends React.Component {
                 word += ch;
                 stream.next();
               }
-                    word = word.replace(/[’ʼ]/g, "'"); // Alternative apostrophes
-              if (isMisspelledFunc && isMisspelledFunc(word)) {
-                return "spell-error"; // CSS class: cm-spell-error
-                    }
+              word = word.replace(/[’ʼ]/g, "'");
+              if (SpellChecker.isMisspelled(word)) {
+                return "spell-error";
+              }
               return null;
             }
           },
-            mode = this.document.getMode(config, {
-                name: "gfm",
-                highlightFormatting: true
-            });
-        return this.document.overlayMode(mode, overlay, true);
+        mode = CodeMirror.getMode(config, {
+          name: "markdown",
+          highlightFormatting: true,
+          taskLists: true,
+          fencedCodeBlocks: true,
+          strikethrough: true
+        });
+        return CodeMirror.overlayMode(mode, overlay, true);
     });
 }
 
