@@ -28,3 +28,6 @@ node_modules
 
 # Bower
 bower_components/
+markbook-darwin-x64
+markbook-win32-x64
+markbook-linux-x64
