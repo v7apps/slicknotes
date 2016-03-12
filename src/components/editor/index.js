@@ -9,7 +9,7 @@ require('codemirror/mode/css/css');
 require('codemirror/keymap/sublime');
 
 /** Addons */
-require('codemirror/addon/edit/continuelist');
+// require('codemirror/addon/edit/continuelist');
 require('codemirror/addon/search/search');
 require('codemirror/addon/search/match-highlighter');
 require('codemirror/addon/dialog/dialog');
