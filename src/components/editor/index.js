@@ -55,7 +55,7 @@ class EditorComponent extends React.Component {
 
   constructor() {
     super();
-    this.state = {toc: []};
+    this.state = {toc: [], showToc: true};
   }
 
   render() {
