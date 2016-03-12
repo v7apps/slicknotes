@@ -34,6 +34,12 @@ require('font-awesome/css/font-awesome.min.css');
 
 require('styles/editor-light.scss');
 
+const electron = eRequire('electron');
+const remote = electron.remote;
+const Menu = remote.Menu;
+const MenuItem = remote.MenuItem;
+
+const clipboard = electron.clipboard;
 
 const $ = require("jquery");
 
@@ -122,6 +128,84 @@ class EditorComponent extends React.Component {
 
     doc.on('cursorActivity', this.refreshPreview.bind(this));
     doc.on('change', this.onTextChange.bind(this));
+
+    var executeCommand = function(item) {
+      switch(item.command) {
+        case "copy":
+          clipboard.writeText(doc.getSelection());
+          break;
+        case "cut":
+          clipboard.writeText(doc.getSelection());
+          doc.replaceSelection("");
+          break;
+        case "paste":
+          doc.replaceSelection(clipboard.readText());
+          break;
+        case "calculate":
+          CalculatorAddon(doc);
+          break;
+        default:
+          doc.execCommand(item.command);
+      }
+
+      doc.focus();
+    };
+
+    var menu = new Menu.buildFromTemplate([
+      {
+        "label": "Undo",
+        "accelerator": "CmdOrCtrl+Z",
+        "command": "undo",
+        click: executeCommand
+      },
+      {
+        "label": "Redo",
+        "accelerator": "CmdOrCtrl+Y",
+        "command": "redo",
+        click: executeCommand
+      },
+      {
+        "type": "separator"
+      },
+      {
+        "label": "Cut",
+        "command": "cut",
+        click: executeCommand
+      },
+      {
+        "label": "Copy",
+        "command": "copy",
+        click: executeCommand
+      },
+      {
+        "label": "Paste",
+        "command": "paste",
+        click: executeCommand
+      },
+      {
+        "type": "separator"
+      },
+      {
+        "label": "Select all",
+        "accelerator": "CmdOrCtrl+A",
+        "command": "selectAll",
+        click: executeCommand
+      },
+      {
+        "type": "separator"
+      },
+      {
+        "label": "Calculate",
+        "accelerator": "Ctrl+Alt+C",
+        "command": "calculate",
+        "click": executeCommand
+      }
+    ]);
+
+    doc.on('contextmenu', function (c, e) {
+      e.preventDefault();
+      menu.popup(remote.getCurrentWindow());
+    }, false);
 
     this.document = doc;
   }
