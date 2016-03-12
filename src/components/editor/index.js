@@ -44,6 +44,7 @@ const clipboard = electron.clipboard;
 const $ = require("jquery");
 
 const classNames = require('classnames');
+// const SpellChecker = require('spellchecker');
 
 import CalculatorAddon from './addons/calculator';
 var autopreview = require('./addons/autopreview');
@@ -80,7 +81,7 @@ class EditorComponent extends React.Component {
         <div ref="noteEditor" className={classNames("note-editor", {"with-toc": this.state.showToc})}></div>
         <div className="toc-list">
           {this.state.showToc && this.state.toc.map(function(item, index) {
-            return (<div className={classNames('toc-list-item', 'toc-item-level-' + item.level, { active: this.state.activeItem == item})} key={item.number} onClick={function(){this.onSelectTocItem(item)}.bind(this)}>
+            return (<div className={classNames('toc-list-item', 'toc-item-level-' + item.level, { active: this.state.selectedToc == item.line})} key={item.line} onClick={function(){this.onSelectTocItem(item)}.bind(this)}>
               <div className="title"><a href='#'> {item.text}</a></div>
             </div>);
           }.bind(this))}
@@ -207,6 +208,8 @@ class EditorComponent extends React.Component {
       menu.popup(remote.getCurrentWindow());
     }, false);
 
+    doc.on('scroll', this.onScroll.bind(this));
+
     this.document = doc;
   }
 
@@ -219,9 +222,9 @@ class EditorComponent extends React.Component {
     var data = NoteStore.getSelectedNote();
 
     this.note = data.note;
-    
+
     this.originalContent = data.contents;
-    
+
     this.refs.noteTitle.value = this.note.title;
     this.document.setValue(data.contents);
 
@@ -230,13 +233,13 @@ class EditorComponent extends React.Component {
   }
 
   onTextChange() {
-    
+
     if( this.switchingDocument ) {
       this.switchingDocument = false;
       return;
     }
     var newContent = this.document.getValue();
-  
+
     if( this.originalContent == newContent ) {
         newContent = null;
       }
@@ -246,45 +249,64 @@ class EditorComponent extends React.Component {
 
   }
 
+  onDeleteNote () {
+    var data = NoteStore.getSelectedNote();
+
+    var answer = confirm('Are you sure?');
+
+    if (answer) {
+      NoteStore.delete(data.note);
+      NoteStore.removeSelectedNote();
+
+      this.document.setValue('');
+      this.document.focus();
+      this.refs.noteTitle.value = '';
+      this.note = null;
+      this.originalContent = null;
+      this.refreshPreview();
+    }
+
+  }
+
   refreshPreview() {
 
     var array = [];
     this.document.eachLine(function(line) {
-
       var matches = /^([\#]+) (.+)/gi.exec(line.text);
       if (matches) {
+        var lineNumber = this.document.getLineNumber(line);
+        var headingCoordinates = this.document.charCoords({line: lineNumber, ch: 0}, "local");
+
         var data = {
           text: matches[2],
           level: matches[1].length,
-          number: this.document.getLineNumber(line)
+          line: lineNumber,
+          coordinates: headingCoordinates
         };
         array.push(data);
       }
       autopreview(this.document, line);
     }.bind(this));
+
     this.setState({toc: array});
-    
   }
 
-  onDeleteNote () {
-    var data = NoteStore.getSelectedNote();
-    
-    var answer = confirm('Are you sure?');
+  onScroll() {
+    var viewport = this.document.getScrollInfo();
 
-    if (answer) {
+    var selectedToc = null;
+    console.log(viewport);
+    console.log(this.state.toc);
+    this.state.toc.forEach( function(element, index) {
+      if( element.coordinates.top <= viewport.top + 10 ) {
+        selectedToc = element.line;
+      }
+    });
 
-        NoteStore.delete(data.note);
-        NoteStore.removeSelectedNote();
-
-        this.document.setValue('');
-        this.document.focus();
-        this.refs.noteTitle.value = '';
-        this.note = null;
-        this.originalContent = null;
-        this.refreshPreview();
-
+    if( this.state.selectedToc != selectedToc ) {
+      this.setState({selectedToc});
+      console.log(selectedToc);
     }
-
   }
 
   onToggleTOC () {
@@ -292,12 +314,10 @@ class EditorComponent extends React.Component {
   }
 
   onSelectTocItem (item) {
-    var headingCoordinates = this.document.charCoords({line: item.number, ch: 0}, "local");
-    // this.document.scrollTo(0, headingCoordinates.top);
+    var headingCoordinates = this.document.charCoords({line: item.line, ch: 0}, "local");
 
-  // cm.getViewport()
     $(this.document.getScrollerElement()).animate({scrollTop: headingCoordinates.top}, 300, function() {
-      this.document.setCursor(item.number, 0);
+      this.document.setCursor(item.line, 0);
       this.document.focus();
     }.bind(this));
   }
@@ -320,9 +340,9 @@ class EditorComponent extends React.Component {
                 stream.next();
               }
               word = word.replace(/[’ʼ]/g, "'");
-              if (SpellChecker.isMisspelled(word)) {
-                return "spell-error";
-              }
+              // if (SpellChecker.isMisspelled(word)) {
+              //   return "spell-error";
+              // }
               return null;
             }
           },
@@ -335,7 +355,7 @@ class EditorComponent extends React.Component {
         });
         return CodeMirror.overlayMode(mode, overlay, true);
     });
-}
+  }
 
 }
 
