@@ -10,6 +10,7 @@ var path = require("path");
     // isUrl = require("is-url"),
     // parsePath = require("parse-filepath");
 var $ = require("jquery");
+var shell = eRequire('electron').shell;
 
 function autopreview (cm, line) {
 
@@ -54,6 +55,7 @@ function autopreview (cm, line) {
             if (!element) {
                 continue;
             }
+            // doc.addLineWidget(line, element);
             markOptions.replacedWith = element;
             textMarker = doc.markText(from, to, markOptions);
             if (typeConfig.callback && typeof typeConfig.callback === "function" && textMarker && element) {
@@ -89,7 +91,7 @@ function autopreview (cm, line) {
                     return $element.get(0);
                 },
                 marker: {
-                    clearOnEnter: false,
+                    clearOnEnter: true,
                     handleMouseEvents: true,
                     inclusiveLeft: true,
                     inclusiveRight: true
@@ -114,7 +116,7 @@ function autopreview (cm, line) {
                         element.onclick = onclickFunc;
                         textMarker.changed();
                     };
-                    element.onclick = onclickFunc;
+                    // element.onclick = onclickFunc;
                 }
             },
             anchor: {
@@ -131,18 +133,23 @@ function autopreview (cm, line) {
                 },
                 marker: {
                     clearOnEnter: false,
-                    handleMouseEvents: true,
-                    inclusiveLeft: true,
-                    inclusiveRight: true
+                    handleMouseEvents: false,
+                    inclusiveLeft: false,
+                    inclusiveRight: false
                 },
                 callback: function (textMarker, element) {
-                    var onclickFunc = function() {
-                      console.log("click");
-                        console.log(element);
+                    console.log(element);
+                    var onclickFunc = function(e) {
+                      e.preventDefault();
+                      if(e.ctrlKey || e.metaKey) {
+                        shell.openExternal(element.href);
+                      }
+                      else {
                         var pos = textMarker.find().to;
                         textMarker.clear();
                         cm.doc.setCursor(pos);
                         cm.focus();
+                      }
                     };
                     textMarker.on("beforeCursorEnter", function () {
                         if (!doc.somethingSelected()) { // Fix blink on selection
@@ -152,7 +159,7 @@ function autopreview (cm, line) {
                     element.addEventListener("load", function() {
                         textMarker.changed();
                     }, false);
-                    element.onclick = onclickFunc;
+                    $(element).on('click', onclickFunc);
                 }
             },
             todolist: {
