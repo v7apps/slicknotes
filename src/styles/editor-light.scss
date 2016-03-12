@@ -8,6 +8,8 @@
 /* Color scheme */
 .cm-s-editor-light {
 
+  flex: 1;
+
   .CodeMirror-selected { background: #cce5fe; }
 
   .CodeMirror-lines {
@@ -18,7 +20,7 @@
     background-color: #ffffff;
     color: #2e383c;
     line-height: 1.4375;
-    font-family: "Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: "TypoPRO Work Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
   }
 

@@ -63,20 +63,23 @@ class EditorComponent extends React.Component {
             <div className="button" onClick={this.onDeleteNote.bind(this)}>
               <i className="fa fa-trash"></i>
             </div>
+            <div className="button" onClick={this.onToggleTOC.bind(this)}>
+              <i className="fa fa-list"></i>
+            </div>
           </div>
         </div>
         <div style={{ flexDirection:'row', display:'flex'}}>
 
-        <div ref="noteEditor" className="note-editor" style={{width:'75%', display:'flex'}}>
-          </div>
-          <div className="list" style={{display:'flex', flexDirection:'column'}}>
-            {this.state.toc.map(function(item, index) {
-              return (<div className={classNames('list-item', { active: this.state.activeItem == item})} key={item.text} onClick={function(){this.onSelectTocItem(item)}.bind(this)}>
-                <div className="title"><a href='#'> {item.text}</a></div>
-              </div>);
-            }.bind(this))}
-      </div>
+        <div ref="noteEditor" className={classNames("note-editor", {"with-toc": this.state.showToc})}></div>
+        <div className="toc-list">
+          {this.state.showToc && this.state.toc.map(function(item, index) {
+            return (<div className={classNames('toc-list-item', 'toc-item-level-' + item.level, { active: this.state.activeItem == item})} key={item.number} onClick={function(){this.onSelectTocItem(item)}.bind(this)}>
+              <div className="title"><a href='#'> {item.text}</a></div>
+            </div>);
+          }.bind(this))}
         </div>
+
+      </div>
       </div>
     );
   }

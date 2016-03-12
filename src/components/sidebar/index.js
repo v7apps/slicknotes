@@ -17,18 +17,19 @@ class SidebarComponent extends React.Component {
   componentDidMount() {
     this.refreshNotes();
     NoteStore.on("LIST_CHANGED_EVENT", this.refreshNotes.bind(this));
+    NoteStore.on("SELECTION_CHANGED_EVENT", this.onNoteSelectedChanged.bind(this));
   }
 
-  componentDidUpdate() {
-    if (this.state.searchText !== this.props.searchText) {
-      this.onSearch();
-    }
-    
-  }
+  // componentDidUpdate() {
+  //   if (this.state.searchText !== this.state.searchText) {
+  //     this.onSearch();
+  //   }
+
+  // }
 
   refreshNotes() {
     NoteStore.fetchNotes().then(function(notes) {
-      
+
       if( notes.length == 0 || this.state.activeItem !== undefined) {
         this.setState({notes: notes, notesMain: notes});
       }
@@ -36,20 +37,44 @@ class SidebarComponent extends React.Component {
         this.setState({notes, activeItem: notes[0]._id});
         this.props.onSelectItem(notes[0]);
       }
+
+      if( this.state.searchText ) {
+        this.onSearch(this.state.searchText);
+      }
+
     }.bind(this));
   }
 
   render() {
     return (
-      <div className="list">
-        {this.state.notes.map(function(item, index) {
-          return (<div className={classNames('list-item', { active: this.state.activeItem == item._id })} key={item._id} onClick={function(){this.onSelectItem(index)}.bind(this)}>
-            <div className="title">{item.title}</div>
-            <div className="date">Last modified: {moment(item.updatedAt).fromNow()}</div>
-          </div>);
-        }.bind(this))}
+      <div>
+        <div id="masthead">
+          <span className="title">SlickNotes</span>
+          <div className="search-container">
+            <input ref="search" className="quick-search" type="text" placeholder="Quick search" onChange={this.onChangeSearchText.bind(this)}/>
+            <i className="fa fa-search"></i>
+          </div>
+          <div className="spacer" style={{flex: 1}}></div>
+          <div className="button add-button" onClick={this.createNewNote.bind(this)}>
+            <i className="fa fa-plus-circle"></i>
+          </div>
+        </div>
+        <div className="list">
+          {this.state.notes.map(function(item, index) {
+            return (<div className={classNames('list-item', { active: this.state.activeItem == item._id })} key={item._id} onClick={function(){this.onSelectItem(index)}.bind(this)}>
+              <div className="title">{item.title}</div>
+              <div className="date">Last modified: {moment(item.updatedAt).fromNow()}</div>
+            </div>);
+          }.bind(this))}
+        </div>
       </div>
     );
+  }
+
+  onNoteSelectedChanged() {
+    if( this.state.activeItem != NoteStore.selectedNote._id ) {
+      this.setState({activeItem: NoteStore.selectedNote._id});
+    }
   }
 
   onSelectItem(index) {
@@ -58,22 +83,39 @@ class SidebarComponent extends React.Component {
     this.props.onSelectItem(item);
   }
 
-  onSearch() {
+  onSearch(searchText) {
     var self = this;
-    self.setState({searchText: self.props.searchText});
-    if (self.props.searchText.length == 0) {
-      this.refreshNotes();
+    var allNotes = NoteStore.getAllNotes();
+    console.log(allNotes.length);
+    self.setState({searchText: searchText});
+    if (searchText.length == 0) {
+      this.setState({notes: allNotes});
     }
     else {
-      var obj = self.state.notesMain.filter(function ( obj ) {
-      // console.log(obj.title.indexOf(self.props.searchText));
-    return obj.title.toLowerCase().indexOf(self.props.searchText.toLowerCase()) >= 0;
-    });
-    
-    this.setState({notes: obj});
+      var notes = allNotes.filter(function ( obj ) {
+        return obj.title.toLowerCase().indexOf(searchText.toLowerCase()) >= 0;
+      });
+
+      this.setState({notes});
     }
-    
-    
+
+  }
+
+  onChangeSearchText() {
+    // console.log(this.refs.search.value);
+    // this.setState({searchText: this.refs.search.value});
+    this.onSearch(this.refs.search.value);
+  }
+
+  createNewNote() {
+
+    var dateFormat = require('dateformat');
+    var now = new Date();
+
+    var date = dateFormat(now, "dddd, mmmm dS, yyyy, h:MM:ss");
+    NoteStore.create({'title': 'New note - ' + date}).then(function(note) {
+      NoteStore.select(note);
+    }.bind(this));
   }
 
 }

@@ -1,4 +1,6 @@
 require('normalize.css');
+require('typopro-web/web/TypoPRO-OpenSans/TypoPRO-OpenSans.css');
+require('typopro-web/web/TypoPRO-WorkSans/TypoPRO-WorkSans.css');
 require('styles/App.scss');
 
 const electron = eRequire('electron');
@@ -36,20 +38,12 @@ class AppComponent extends React.Component {
     }
     else {
       editorArea = <p> No Note Selected </p>
-      
+
     }
     return (
       <div id="app-container" style={{display: "flex", flexDirection: "column"}}>
-        <div id="masthead" style={{height: 44}}>
-          <span className="title">SlickNotes</span>
-          <input ref="search" className="quick-search" type="text" placeholder="Quick search" onChange={this.onChangeSearchText.bind(this)}/>
-          <div className="spacer" style={{flex: 1}}></div>
-          <div className="button add-button" onClick={this.createNewNote.bind(this)}>
-            <i className="fa fa-plus-circle"></i>
-          </div>
-        </div>
         <SplitPane split="vertical" minSize="100" defaultSize="250" maxSize="500" style={{flex: 1}}>
-          <Sidebar onSelectItem={this.onSelectItem.bind(this)} searchText={this.state.searchText}></Sidebar>
+          <Sidebar onSelectItem={this.onSelectItem.bind(this)}></Sidebar>
           {editorArea}
         </SplitPane>
       </div>
@@ -57,40 +51,24 @@ class AppComponent extends React.Component {
   }
 
   componentDidMount() {
-    
-    
+
+
     NoteStore.on("ITEM_DELETE_EVENT", this.refreshList.bind(this));
   }
 
   refreshList () {
-  
+
     this.setState({itemSelected: false});
-  
+
   }
 
   onSelectItem(item) {
-    
+
     this.setState({itemSelected: true});
     setInterval(1000);
     NoteStore.select(item);
   }
 
-  onChangeSearchText() {
-
-    console.log(this.refs.search.value);
-    this.setState({searchText: this.refs.search.value});
-  }
-
-  createNewNote() {
-
-    var dateFormat = require('dateformat');
-    var now = new Date();
-    
-    var date = dateFormat(now, "dddd, mmmm dS, yyyy, h:MM:ss");
-    NoteStore.create({'title': 'New note - ' + date}).then(function(note) {
-      NoteStore.select(note);
-    }.bind(this));
-  }
 }
 
 AppComponent.defaultProps = {
