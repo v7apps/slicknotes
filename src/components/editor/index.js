@@ -161,22 +161,18 @@ class EditorComponent extends React.Component {
 
   }
 
-  parseToc (array) {
-    var obj = array.filter(function ( obj ) {
-      return obj.startsWith("#### ");
-    });
-    
-    this.setState({toc: obj});
-    
-  }
-
   refreshPreview() {
-    
+
     var array = [];
     this.document.eachLine(function(line) {
-      
-      if (line.text.match(/^([\#]+) (.+)/gi)) {
-        var data = {"text": line.text, number: this.document.getLineNumber(line)};
+
+      var matches = /^([\#]+) (.+)/gi.exec(line.text);
+      if (matches) {
+        var data = {
+          text: matches[2],
+          level: matches[1].length,
+          number: this.document.getLineNumber(line)
+        };
         array.push(data);
       }
       autopreview(this.document, line);
@@ -206,10 +202,19 @@ class EditorComponent extends React.Component {
 
   }
 
-  onSelectTocItem (item) {
+  onToggleTOC () {
+    this.setState({showToc: !this.state.showToc})
+  }
 
-    this.document.scrollIntoView(item.number, 0);
-    // this.document.setCursor(item.number, 0);
+  onSelectTocItem (item) {
+    var headingCoordinates = this.document.charCoords({line: item.number, ch: 0}, "local");
+    // this.document.scrollTo(0, headingCoordinates.top);
+
+  // cm.getViewport()
+    $(this.document.getScrollerElement()).animate({scrollTop: headingCoordinates.top}, 300, function() {
+      this.document.setCursor(item.number, 0);
+      this.document.focus();
+    }.bind(this));
   }
 
   initSpellcheck () {

@@ -281,6 +281,42 @@ input:focus {
     }
   }
 }
+
+.toc-list {
+  margin: 10px;
+  padding: 10px;
+  font-size: 0.8em;
+  // border-right: 1px solid #ccc;
+  // border: 1px solid #ddd;
+  display: flex;
+  position: absolute;
+  right: 0px;
+  z-index: 10;
+  border-radius: 5px;
+  width: 200px;
+  flex-direction: column;
+
+  .toc-list-item {
+    a {
+      color: #1d75b3;
+      text-decoration: initial;
     }
+
+    &.active {
+      border-left: 2px solid #1d75b3;
+    }
+  }
+
+  .toc-item-level {
+
+    @for $i from 1 through 8 {
+      $width: 10px;
+
+      &-#{$i} {
+        padding-left: ($width * $i);
+      }
+
+    }
+
   }
 }
