@@ -41,6 +41,7 @@ const classNames = require('classnames');
 
 import CalculatorAddon from './addons/calculator';
 var autopreview = require('./addons/autopreview');
+require('./addons/continuelist');
 
 const NoteStore = require('../../stores/NoteStore');
 
