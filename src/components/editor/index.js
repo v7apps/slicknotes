@@ -46,7 +46,7 @@ const clipboard = electron.clipboard;
 const $ = require("jquery");
 
 const classNames = require('classnames');
-// const SpellChecker = require('spellchecker');
+const SpellChecker = remote.require('spellchecker');
 
 import CalculatorAddon from './addons/calculator';
 var autopreview = require('./addons/autopreview');
@@ -54,42 +54,61 @@ require('./addons/continuelist');
 
 const NoteStore = require('../../stores/NoteStore');
 
+const tidyMarkdown = require('tidy-markdown');
+
 class EditorComponent extends React.Component {
 
   constructor() {
     super();
-    this.state = {toc: [], showToc: true};
+    this.state = {
+      toc: [],
+      showToc: true
+    };
   }
 
   render() {
 
     return (
       <div className="editor">
-        <div style={{flexDirection:'row'}}>
-          <div className="note-title" style={{display:'flex'}}>
-            <input ref="noteTitle" className="note-title-input" placeholder="Untitled Note" onChange={this.onTextChange.bind(this)} />
+        <div style={{flexDirection: 'row'}}>
+          <div className="note-title" style={{display: 'flex'}}>
+            <input ref="noteTitle"
+                   className="note-title-input"
+                   placeholder="Untitled Note"
+                   onChange={this.onTextChange.bind(this)}/>
           </div>
           <div className="title-toolbar">
+            <div className="button">
+              <i className="fa fa-eye"></i>
+            </div>
+
             <div className="button" onClick={this.onDeleteNote.bind(this)}>
               <i className="fa fa-trash"></i>
             </div>
+
             <div className="button" onClick={this.onToggleTOC.bind(this)}>
               <i className="fa fa-list"></i>
             </div>
+
           </div>
         </div>
-        <div style={{ flexDirection:'row', display:'flex'}}>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
+          <div ref="noteEditor" className={classNames("note-editor", {"with-toc": this.state.showToc})}>
+          </div>
+          <div className="toc-list">
+            {
+              this.state.showToc && this.state.toc.map(function (item, index) {
+                return (
+                  <div
+                    className={classNames('toc-list-item', 'toc-item-level-' + item.level, {active: this.state.selectedToc == item.line})}
+                    key={item.line} onClick={function() { this.onSelectTocItem(item)}.bind(this)}>
+                    <div className="title"><a href='#'>{item.text}</a></div>
 
-        <div ref="noteEditor" className={classNames("note-editor", {"with-toc": this.state.showToc})}></div>
-        <div className="toc-list">
-          {this.state.showToc && this.state.toc.map(function(item, index) {
-            return (<div className={classNames('toc-list-item', 'toc-item-level-' + item.level, { active: this.state.selectedToc == item.line})} key={item.line} onClick={function(){this.onSelectTocItem(item)}.bind(this)}>
-              <div className="title"><a href='#'> {item.text}</a></div>
-            </div>);
-          }.bind(this))}
+                  </div>);
+              }.bind(this))
+            }
+          </div>
         </div>
-
-      </div>
       </div>
     );
   }
@@ -114,16 +133,18 @@ class EditorComponent extends React.Component {
       extraKeys: {
         "Enter": "newlineAndIndentContinueMarkdownList",
         "Ctrl-Alt-C": () => CalculatorAddon(doc),
-        "Cmd-=": function() {
-          var oldSize = parseInt($(".CodeMirror").css("font-size")),
-          newSize = oldSize + 2;
-          $(".CodeMirror").css("font-size", "" + newSize + "px");
+        "Cmd-=": function () {
+          var cmEditor = $(".CodeMirror");
+          var oldSize = parseInt(cmEditor.css("font-size")),
+            newSize = oldSize + 2;
+          cmEditor.css("font-size", "" + newSize + "px");
           doc.refresh();
         },
-        "Cmd--": function() {
-          var oldSize = parseInt($(".CodeMirror").css("font-size")),
-          newSize = oldSize - 2;
-          $(".CodeMirror").css("font-size", "" + newSize + "px");
+        "Cmd--": function () {
+          var cmEditor = $(".CodeMirror");
+          var oldSize = parseInt(cmEditor.css("font-size")),
+            newSize = oldSize - 2;
+          cmEditor.css("font-size", "" + newSize + "px");
           doc.refresh();
         }
       }
@@ -132,8 +153,8 @@ class EditorComponent extends React.Component {
     doc.on('cursorActivity', this.refreshPreview.bind(this));
     doc.on('change', this.onTextChange.bind(this));
 
-    var executeCommand = function(item) {
-      switch(item.command) {
+    var executeCommand = function (item) {
+      switch (item.command) {
         case "copy":
           clipboard.writeText(doc.getSelection());
           break;
@@ -147,6 +168,14 @@ class EditorComponent extends React.Component {
         case "calculate":
           CalculatorAddon(doc);
           break;
+        case "beautify":
+          doc.setValue(tidyMarkdown(doc.getValue()));
+          break;
+        case "fixSpelling":
+          var curserPos = doc.getCursor();
+          var token = doc.getTokenAt(curserPos);
+          doc.replaceRange(item.label, {line: curserPos.line, ch: token.start}, {line: curserPos.line, ch: token.end});
+          break;
         default:
           doc.execCommand(item.command);
       }
@@ -154,63 +183,89 @@ class EditorComponent extends React.Component {
       doc.focus();
     };
 
-    var menu = new Menu.buildFromTemplate([
+    var menuTemplate = [
       {
         "label": "Undo",
         "accelerator": "CmdOrCtrl+Z",
         "command": "undo",
         click: executeCommand
-      },
-      {
+      }, {
         "label": "Redo",
         "accelerator": "CmdOrCtrl+Y",
         "command": "redo",
         click: executeCommand
-      },
-      {
+      }, {
         "type": "separator"
-      },
-      {
+      }, {
         "label": "Cut",
         "command": "cut",
         click: executeCommand
-      },
-      {
+      }, {
         "label": "Copy",
         "command": "copy",
         click: executeCommand
-      },
-      {
+      }, {
         "label": "Paste",
         "command": "paste",
         click: executeCommand
-      },
-      {
+      }, {
         "type": "separator"
-      },
-      {
+      }, {
         "label": "Select all",
         "accelerator": "CmdOrCtrl+A",
         "command": "selectAll",
         click: executeCommand
-      },
-      {
+      }, {
         "type": "separator"
-      },
-      {
+      }, {
         "label": "Calculate",
         "accelerator": "Ctrl+Alt+C",
         "command": "calculate",
         "click": executeCommand
-      }
-    ]);
+      }, {
+        "label": "Beautify",
+        "command": "beautify",
+        "click": executeCommand
+      }];
+    var menu = new Menu.buildFromTemplate(menuTemplate);
 
     doc.on('contextmenu', function (c, e) {
       e.preventDefault();
-      menu.popup(remote.getCurrentWindow());
+
+      var coordinates = doc.coordsChar({
+        left: e.pageX,
+        top: e.pageY
+      }, "window");
+
+      doc.setCursor(coordinates);
+      var token = doc.getTokenAt(coordinates);
+
+      console.log(token);
+
+      if (token.type && token.type.indexOf("spell-error") >= 0) {
+        console.log("suggestions for " + token.string);
+        var suggestions = SpellChecker.getCorrectionsForMisspelling(token.string);
+        var suggestionMenuItems = suggestions.map(function(s) {
+          return {
+            label: s,
+            command: "fixSpelling",
+            click: executeCommand
+          };
+        });
+
+        suggestionMenuItems.push({"type": "separator"});
+
+        var menuItems = suggestionMenuItems.concat(menuTemplate);
+        var suggestionMenu = new Menu.buildFromTemplate(menuItems);
+        suggestionMenu.popup(remote.getCurrentWindow());
+      }
+      else {
+        menu.popup(remote.getCurrentWindow());
+      }
+
     }, false);
 
-    doc.on('scroll', this.onScroll.bind(this));
+    // doc.on('scroll', this.onScroll.bind(this));
 
     this.document = doc;
   }
@@ -236,22 +291,22 @@ class EditorComponent extends React.Component {
 
   onTextChange() {
 
-    if( this.switchingDocument ) {
+    if (this.switchingDocument) {
       this.switchingDocument = false;
       return;
     }
     var newContent = this.document.getValue();
 
-    if( this.originalContent == newContent ) {
-        newContent = null;
-      }
+    if (this.originalContent == newContent) {
+      newContent = null;
+    }
 
-      this.note.title = this.refs.noteTitle.value;
-      NoteStore.save(this.note, newContent);
+    this.note.title = this.refs.noteTitle.value;
+    NoteStore.save(this.note, newContent);
 
   }
 
-  onDeleteNote () {
+  onDeleteNote() {
     var data = NoteStore.getSelectedNote();
 
     var answer = confirm('Are you sure?');
@@ -273,11 +328,14 @@ class EditorComponent extends React.Component {
   refreshPreview() {
 
     var array = [];
-    this.document.eachLine(function(line) {
+    this.document.eachLine(function (line) {
       var matches = /^([\#]+) (.+)/gi.exec(line.text);
       if (matches) {
         var lineNumber = this.document.getLineNumber(line);
-        var headingCoordinates = this.document.charCoords({line: lineNumber, ch: 0}, "local");
+        var headingCoordinates = this.document.charCoords({
+          line: lineNumber,
+          ch: 0
+        }, "local");
 
         var data = {
           text: matches[2],
@@ -290,64 +348,73 @@ class EditorComponent extends React.Component {
       autopreview(this.document, line);
     }.bind(this));
 
-    this.setState({toc: array});
+    this.setState({
+      toc: array
+    });
   }
 
   onScroll() {
     var viewport = this.document.getScrollInfo();
 
     var selectedToc = null;
-    console.log(viewport);
-    console.log(this.state.toc);
-    this.state.toc.forEach( function(element, index) {
-      if( element.coordinates.top <= viewport.top + 10 ) {
+
+    this.state.toc.forEach(function (element, index) {
+      if (element.coordinates.top <= viewport.top + 10) {
         selectedToc = element.line;
       }
     });
 
-    if( this.state.selectedToc != selectedToc ) {
-      this.setState({selectedToc});
-      console.log(selectedToc);
+    if (this.state.selectedToc != selectedToc) {
+      this.setState({
+        selectedToc
+      });
     }
   }
 
-  onToggleTOC () {
-    this.setState({showToc: !this.state.showToc})
+  onToggleTOC() {
+    this.setState({
+      showToc: !this.state.showToc
+    })
   }
 
-  onSelectTocItem (item) {
-    var headingCoordinates = this.document.charCoords({line: item.line, ch: 0}, "local");
+  onSelectTocItem(item) {
+    var headingCoordinates = this.document.charCoords({
+      line: item.line,
+      ch: 0
+    }, "local");
 
-    $(this.document.getScrollerElement()).animate({scrollTop: headingCoordinates.top}, 300, function() {
+    $(this.document.getScrollerElement()).animate({
+      scrollTop: headingCoordinates.top
+    }, 300, function () {
       this.document.setCursor(item.line, 0);
       this.document.focus();
     }.bind(this));
   }
 
-  initSpellcheck () {
+  initSpellcheck() {
     CodeMirror.defineMode("spell-checker", function (config, parserConfig) {
       console.log('define mode');
-        var wordDelimiters = "!\"#$%&()*+,-./:;<=>?@[\\]^_`{|}~ \t",
-            overlay = {
-            token: function(stream, state) {
-              var ch = stream.peek(),
-                        word = "";
+      var wordDelimiters = "!\"#$%&()*+,-./:;<=>?@[\\]^_`{|}~ \t",
+        overlay = {
+          token: function (stream, state) {
+            var ch = stream.peek(),
+              word = "";
 
-              if (wordDelimiters.includes(ch)) {
-                stream.next();
-                return null;
-              }
-              while ((ch = stream.peek()) != null && !wordDelimiters.includes(ch)) {
-                word += ch;
-                stream.next();
-              }
-              word = word.replace(/[’ʼ]/g, "'");
-              // if (SpellChecker.isMisspelled(word)) {
-              //   return "spell-error";
-              // }
+            if (wordDelimiters.includes(ch)) {
+              stream.next();
               return null;
             }
-          },
+            while ((ch = stream.peek()) != null && !wordDelimiters.includes(ch)) {
+              word += ch;
+              stream.next();
+            }
+            word = word.replace(/[’ʼ]/g, "'");
+            if (SpellChecker.isMisspelled(word)) {
+              return "spell-error";
+            }
+            return null;
+          }
+        },
         mode = CodeMirror.getMode(config, {
           name: "markdown",
           highlightFormatting: true,
@@ -355,7 +422,7 @@ class EditorComponent extends React.Component {
           fencedCodeBlocks: true,
           strikethrough: true
         });
-        return CodeMirror.overlayMode(mode, overlay, true);
+      return CodeMirror.overlayMode(mode, overlay, true);
     });
   }
 

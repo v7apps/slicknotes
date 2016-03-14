@@ -38,5 +38,8 @@ module.exports = {
   module: {},
   postcss: function () {
     return [];
-  }
+  },
+  externals: [
+    "fs"
+  ]
 };
