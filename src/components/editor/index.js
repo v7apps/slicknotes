@@ -5,6 +5,8 @@ var CodeMirror = require('codemirror');
 /** Base setup */
 require('./mode/markdown');
 require('codemirror/mode/javascript/javascript');
+require('codemirror/mode/python/python');
+require('codemirror/mode/shell/shell');
 require('codemirror/mode/css/css');
 require('codemirror/keymap/sublime');
 
