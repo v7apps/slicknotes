@@ -143,6 +143,7 @@ input:focus {
     margin-left: 0px;
     background: white;
     border-radius: 5px;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.8);
 
     .title-toolbar {
       position: absolute;
@@ -214,7 +215,7 @@ input:focus {
 }
 
 .list-item {
-  padding: 5px 0px;
+  padding: 5px 10px;
   // border-bottom: 1px solid #e0e0e0;
   cursor: default;
 
@@ -235,6 +236,7 @@ input:focus {
 
     .title {
       // color: black;
+      text-decoration: underline;
     }
   }
 

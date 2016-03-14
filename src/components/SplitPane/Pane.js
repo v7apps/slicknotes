@@ -24,7 +24,7 @@ exports.default = _react2.default.createClass({
             flex: 1,
             position: 'relative',
             outline: 'none',
-            overflow: 'auto',
+            overflow: 'visible',
             // height: '100%'
         };
         if (this.state.size !== undefined) {

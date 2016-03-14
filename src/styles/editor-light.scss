@@ -45,28 +45,28 @@
 
     &.header {
       &.header-1 {
-        padding-bottom: .21999em;
-        padding-top: .78001em
+        padding-bottom: .25em;
+        padding-top: .8em;
       }
       &.header-2 {
-        padding-bottom: .1835837em;
-        padding-top: .8164163em
+        padding-bottom: .20em;
+        padding-top: .75em;
       }
       &.header-3 {
-        padding-bottom: .07599em;
-        padding-top: .92401em
+        padding-bottom: .10em;
+        padding-top: .6em;
       }
       &.header-4 {
-        padding-bottom: .546865em;
-        padding-top: .453135em
+        padding-bottom: .075em;
+        padding-top: .45em;
       }
       &.header-5 {
-        padding-bottom: -.56251em;
-        padding-top: .56251em
+        padding-bottom: .05em;
+        padding-top: .3em;
       }
       &.header-6 {
-        padding-bottom: -.65001em;
-        padding-top: .65001em
+        padding-bottom: .025em;
+        padding-top: .1em;
       }
     }
   }
@@ -164,20 +164,20 @@
   // cm-formatting-code
 
   .cm-m-markdown.cm-comment:not(.cm-formatting-code-block) {
-    background-color: #fafafa;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
+    background-color: rgba(200, 200, 200, 0.2);
+    border-top: 1px solid rgba(150, 150, 150, 0.2);
+    border-bottom: 1px solid rgba(150, 150, 150, 0.2);
   }
 
   .cm-m-markdown:not(.cm-comment) + .cm-formatting-code, .cm-formatting-code:first-child {
     border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
-    border-left: 1px solid #f0f0f0;
+    border-left: 1px solid rgba(150, 150, 150, 0.2);
   }
 
   .cm-comment + .cm-formatting-code {
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
-    border-right: 1px solid #f0f0f0;
+    border-right: 1px solid rgba(150, 150, 150, 0.2);
   }
 }
