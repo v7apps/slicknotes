@@ -1,8 +1,8 @@
 /* Edit theme for codemirror */
 
 @mixin monoStyle {
-  font-size: 0.9em;
-  font-family: Monaco, monospace;
+  // font-size: 0.9em;
+  font-family: "TypoPRO Anonymous Pro", monospace;
 }
 
 /* Color scheme */
@@ -103,6 +103,10 @@
 
   .cm-keyword, .cm-property, .cm-formatting-task, .cm-formatting-header, .cm-builtin {
     color: #1d75b3;
+  }
+
+  .cm-formatting-list.cm-formatting-list-ol {
+    width: 50px;
   }
 
   .cm-atom, .cm-number {

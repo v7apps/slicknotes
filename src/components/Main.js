@@ -1,6 +1,7 @@
 require('normalize.css');
 require('typopro-web/web/TypoPRO-OpenSans/TypoPRO-OpenSans.css');
 require('typopro-web/web/TypoPRO-WorkSans/TypoPRO-WorkSans.css');
+require('typopro-web/web/TypoPRO-AnonymousPro/TypoPRO-AnonymousPro.css');
 require('styles/App.scss');
 
 const electron = eRequire('electron');
