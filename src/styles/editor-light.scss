@@ -28,17 +28,73 @@
     color: #75787b;
   }
 
-  .CodeMirror-line.hr:after {
-    content: "";
-    display: block;
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    left: 0;
-    height: 0px;
-    border-bottom: 2px groove rgba(200, 200, 200, 0.75);
-    color: #ddd;
-    font-size: 10px;
+  .CodeMirror-line {
+
+    &.hr:after {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      left: 0;
+      height: 0px;
+      border-bottom: 2px groove rgba(200, 200, 200, 0.75);
+      color: #ddd;
+      font-size: 10px;
+    }
+
+    &.header {
+      &.header-1 {
+        padding-bottom: .21999em;
+        padding-top: .78001em
+      }
+      &.header-2 {
+        padding-bottom: .1835837em;
+        padding-top: .8164163em
+      }
+      &.header-3 {
+        padding-bottom: .07599em;
+        padding-top: .92401em
+      }
+      &.header-4 {
+        padding-bottom: .546865em;
+        padding-top: .453135em
+      }
+      &.header-5 {
+        padding-bottom: -.56251em;
+        padding-top: .56251em
+      }
+      &.header-6 {
+        padding-bottom: -.65001em;
+        padding-top: .65001em
+      }
+    }
+  }
+
+  .cm-header {
+    &.cm-header-1 {
+      font-size: 2.0571429em;
+    }
+
+    &.cm-header-2 {
+      font-size: 1.953125em;
+    }
+
+    &.cm-header-3 {
+      font-size: 1.6457143em;
+    }
+
+    &.cm-header-4 {
+      font-size: 1.5625em;
+    }
+
+    &.cm-header-5 {
+      font-size: 1.25em;
+    }
+
+    &.cm-header-6 {
+      font-size: 1em;
+    }
   }
 
   .task-closed {
@@ -87,44 +143,6 @@
   .CodeMirror-cursor {
     border-color: black;
     z-index: 1;
-  }
-
-  .cm-header {
-    &.cm-header-1 {
-      font-size: 2.0571429em;
-      margin-bottom: .21999em;
-      padding-top: .78001em
-    }
-
-    &.cm-header-2 {
-      font-size: 1.953125em;
-      margin-bottom: .1835837em;
-      padding-top: .8164163em
-    }
-
-    &.cm-header-3 {
-      font-size: 1.6457143em;
-      margin-bottom: .07599em;
-      padding-top: .92401em
-    }
-
-    &.cm-header-4 {
-      font-size: 1.5625em;
-      margin-bottom: .546865em;
-      padding-top: .453135em
-    }
-
-    &.cm-header-5 {
-      font-size: 1.25em;
-      margin-bottom: -.56251em;
-      padding-top: .56251em
-    }
-
-    &.cm-header-6 {
-      font-size: 1em;
-      margin-bottom: -.65001em;
-      padding-top: .65001em
-    }
   }
 
   .CodeMirror-activeline-background {

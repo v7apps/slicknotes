@@ -305,7 +305,11 @@ CodeMirror.defineMode("markdown", function(cmCfg, modeCfg) {
       if (state.code) { styles.push(tokenTypes.code); }
     }
 
-    if (state.header) { styles.push(tokenTypes.header, tokenTypes.header + "-" + state.header); }
+    if (state.header) {
+      var headerStyle = tokenTypes.header + "-" + state.header;
+      styles.push(tokenTypes.header, headerStyle);
+      styles.push("line-" + tokenTypes.header, "line-" + headerStyle);
+    }
 
     if (state.quote) {
       styles.push(tokenTypes.quote);
