@@ -169,7 +169,7 @@
     border-bottom: 1px solid #f0f0f0;
   }
 
-  .cm-m-markdown:not(.cm-comment) + .cm-formatting-code {
+  .cm-m-markdown:not(.cm-comment) + .cm-formatting-code, .cm-formatting-code:first-child {
     border-top-left-radius: 2px;
     border-bottom-left-radius: 2px;
     border-left: 1px solid #f0f0f0;
