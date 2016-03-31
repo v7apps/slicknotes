@@ -77,16 +77,14 @@ class NoteStore extends EventEmitter {
   }
 
   getSelectedNote() {
-    return {
-      note: this.selectedNote,
-      contents: this.selectedNoteContents
-    };
-  }
+    if ( this.selectedNote ) {
+      return {
+        note: this.selectedNote,
+        contents: this.selectedNoteContents
+      };
+    }
 
-  removeSelectedNote() {
-    this.selectedNote = null;
-    this.selectedNoteContents = null;
-
+    return null;
   }
 
   create(data) {
@@ -131,7 +129,14 @@ class NoteStore extends EventEmitter {
   }
 
   select(note) {
-    var notePath = path.join(this.notesFolder, `${note._id}.md`)
+    if( !note ) {
+      this.selectedNote = null;
+      this.selectedNoteContents = null;
+      this.emit("SELECTION_CHANGED_EVENT");
+      return;
+    }
+
+    var notePath = path.join(this.notesFolder, `${note._id}.md`);
     fs.readFile(notePath, 'utf8', function(err, data) {
       if(err) {
         console.warn(err);

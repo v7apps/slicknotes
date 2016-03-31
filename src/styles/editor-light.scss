@@ -10,10 +10,12 @@
 
   flex: 1;
 
-  .CodeMirror-selected { background: #cce5fe; }
+  .CodeMirror-selected {
+    background: #cce5fe;
+  }
 
   .CodeMirror-lines {
-    padding: 10px 20px 20px;
+    padding: 10px 0px 20px;
   }
 
   &.CodeMirror {
@@ -25,7 +27,7 @@
   }
 
   .cm-comment {
-    color: #75787b;
+    //color: #75787b;
   }
 
   .CodeMirror-line {
@@ -69,6 +71,16 @@
         padding-top: .1em;
       }
     }
+
+    &.table {
+      font-family: "TypoPro Anonymous Pro", monospace;
+
+      //span.cm-m-markdown {
+      //  white-space: pre;
+      //  word-wrap: normal;
+      //}
+
+    }
   }
 
   .cm-header {
@@ -95,6 +107,7 @@
     &.cm-header-6 {
       font-size: 1em;
     }
+
   }
 
   .task-closed {
@@ -127,7 +140,7 @@
 
   /* Editor styling */
   pre {
-    padding: 0;
+    padding: 0 20px;
   }
 
   .CodeMirror-gutters {
@@ -141,8 +154,12 @@
     color: #e0e2e5;
   }
 
-  .CodeMirror-guttermarker { color: #1d75b3; }
-  .CodeMirror-guttermarker-subtle { color: #e0e2e5; }
+  .CodeMirror-guttermarker {
+    color: #1d75b3;
+  }
+  .CodeMirror-guttermarker-subtle {
+    color: #e0e2e5;
+  }
 
   .CodeMirror-cursor {
     border-color: black;

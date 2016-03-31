@@ -32,41 +32,27 @@ class AppComponent extends React.Component {
   }
 
   render() {
-
-    var editorArea;
-    if (this.state.itemSelected) {
-      editorArea = <Editor note={this.state.selectedNote}></Editor>;
-    }
-    else {
-      editorArea = <p> No Note Selected </p>
-
-    }
     return (
-      <div id="app-container" style={{display: "flex", flexDirection: "column"}}>
+      <div id="app-container">
         <SplitPane split="vertical" minSize="100" defaultSize="250" maxSize="500" style={{flex: 1}}>
           <Sidebar onSelectItem={this.onSelectItem.bind(this)}></Sidebar>
-          {editorArea}
+          <Editor note={this.state.selectedNote}></Editor>
         </SplitPane>
       </div>
     );
   }
 
-  componentDidMount() {
-
-
-    NoteStore.on("ITEM_DELETE_EVENT", this.refreshList.bind(this));
-  }
-
-  refreshList () {
-
-    this.setState({itemSelected: false});
-
-  }
+  //componentDidMount() {
+  //  NoteStore.on("ITEM_DELETE_EVENT", this.refreshList.bind(this));
+  //}
+  //
+  //refreshList () {
+  //  this.setState({itemSelected: false});
+  //}
 
   onSelectItem(item) {
-
-    this.setState({itemSelected: true});
-    setInterval(1000);
+    //this.setState({itemSelected: true});
+    //setInterval(1000);
     NoteStore.select(item);
   }
 

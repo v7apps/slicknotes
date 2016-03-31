@@ -3,11 +3,7 @@ import React from 'react';
 var CodeMirror = require('codemirror');
 
 /** Base setup */
-require('./mode/markdown');
-require('codemirror/mode/javascript/javascript');
-require('codemirror/mode/python/python');
-require('codemirror/mode/shell/shell');
-require('codemirror/mode/css/css');
+require('./mode/slick-notes');
 require('codemirror/keymap/sublime');
 
 /** Addons */
@@ -62,14 +58,19 @@ class EditorComponent extends React.Component {
     super();
     this.state = {
       toc: [],
-      showToc: true
+      showToc: true,
+      lineWrapping: true,
+      noSelection: true
     };
+
+    this.openDocuments = {};
   }
 
   render() {
 
     return (
-      <div className="editor">
+      <div className={classNames("editor", {"empty": this.state.noSelection})}>
+        {this.state.noSelection && <div className="empty-message">No Note Selected</div>}
         <div style={{flexDirection: 'row'}}>
           <div className="note-title" style={{display: 'flex'}}>
             <input ref="noteTitle"
@@ -78,21 +79,26 @@ class EditorComponent extends React.Component {
                    onChange={this.onTextChange.bind(this)}/>
           </div>
           <div className="title-toolbar">
-            <div className="button">
-              <i className="fa fa-eye"></i>
+
+            <div className="button" onClick={this.onToggleWrapping.bind(this)}>
+              <i className="fa fa-align-justify"></i>
             </div>
 
-            <div className="button" onClick={this.onDeleteNote.bind(this)}>
-              <i className="fa fa-trash"></i>
+            <div className="button">
+              <i className="fa fa-eye"></i>
             </div>
 
             <div className="button" onClick={this.onToggleTOC.bind(this)}>
               <i className="fa fa-list"></i>
             </div>
 
+            <div className="button" onClick={this.onDeleteNote.bind(this)}>
+              <i className="fa fa-trash"></i>
+            </div>
+
           </div>
         </div>
-        <div style={{flexDirection: 'row', display: 'flex'}}>
+        <div className="note-container">
           <div ref="noteEditor" className={classNames("note-editor", {"with-toc": this.state.showToc})}>
           </div>
           <div className="toc-list">
@@ -110,18 +116,16 @@ class EditorComponent extends React.Component {
           </div>
         </div>
       </div>
+
     );
   }
 
   componentDidMount() {
     NoteStore.on("SELECTION_CHANGED_EVENT", this.noteSelectedChanged.bind(this));
-    this.initSpellcheck();
 
     var doc = CodeMirror(this.refs.noteEditor, {
-      mode: {
-        name: "spell-checker"
-      },
-      lineWrapping: true,
+      mode: "slick-notes",
+      lineWrapping: this.state.lineWrapping,
       keyMap: "sublime",
       theme: 'editor-light',
       foldGutter: true,
@@ -169,7 +173,9 @@ class EditorComponent extends React.Component {
           CalculatorAddon(doc);
           break;
         case "beautify":
-          doc.setValue(tidyMarkdown(doc.getValue()));
+          //console.log(doc.getSelection());
+          //doc.setValue(tidyMarkdown(doc.getValue()));
+          doc.replaceSelection(tidyMarkdown(doc.getSelection()));
           break;
         case "fixSpelling":
           var curserPos = doc.getCursor();
@@ -237,35 +243,78 @@ class EditorComponent extends React.Component {
         top: e.pageY
       }, "window");
 
-      doc.setCursor(coordinates);
-      var token = doc.getTokenAt(coordinates);
+      console.log(coordinates);
 
-      console.log(token);
+      //doc.setCursor(coordinates);
 
-      if (token.type && token.type.indexOf("spell-error") >= 0) {
-        console.log("suggestions for " + token.string);
-        var suggestions = SpellChecker.getCorrectionsForMisspelling(token.string);
-        var suggestionMenuItems = suggestions.map(function(s) {
-          return {
-            label: s,
-            command: "fixSpelling",
-            click: executeCommand
-          };
-        });
+      var isOnSelection = false;
+      doc.listSelections().forEach(function(sel) {
 
-        suggestionMenuItems.push({"type": "separator"});
+        if( isOnSelection ) { return; }
 
-        var menuItems = suggestionMenuItems.concat(menuTemplate);
-        var suggestionMenu = new Menu.buildFromTemplate(menuItems);
-        suggestionMenu.popup(remote.getCurrentWindow());
+        console.log(sel);
+        var startLine = sel.from().line;
+        var startChar = sel.from().ch;
+
+        var endLine = sel.to().line;
+        var endChar = sel.to().ch;
+
+        if( coordinates.line >= startLine && coordinates.line <= endLine ) {
+
+          if( startLine == endLine ) {
+            isOnSelection = coordinates.ch >= startChar && coordinates.ch <= endChar;
+          }
+          else {
+            if( coordinates.line == startLine ) {
+              isOnSelection = coordinates.ch >= startChar;
+            }
+            else if( coordinates.line == endLine ) {
+              isOnSelection = coordinates.ch <= startChar;
+            }
+            else {
+              isOnSelection = true;
+            }
+          }
+
+        }
+
+      });
+
+      var menuToShow = null;
+      if( !isOnSelection ) {
+        var token = doc.getTokenAt(coordinates);
+        console.log(token);
+
+        doc.setSelection({line: coordinates.line, ch: token.start}, {line: coordinates.line, ch: token.end});
+
+        if (token.type && token.type.indexOf("spell-error") >= 0) {
+          //console.log("suggestions for " + token.string);
+          var suggestions = SpellChecker.getCorrectionsForMisspelling(token.string);
+          var suggestionMenuItems = suggestions.map(function (s) {
+            return {
+              label: s,
+              command: "fixSpelling",
+              click: executeCommand
+            };
+          });
+
+          suggestionMenuItems.push({"type": "separator"});
+
+          var menuItems = suggestionMenuItems.concat(menuTemplate);
+          menuToShow = new Menu.buildFromTemplate(menuItems);
+        }
+
       }
-      else {
-        menu.popup(remote.getCurrentWindow());
-      }
+
+      menuToShow = menuToShow || menu;
+
+      setTimeout(function() {
+        menuToShow.popup(remote.getCurrentWindow());
+      }, 50);
 
     }, false);
 
-    // doc.on('scroll', this.onScroll.bind(this));
+    //doc.on('scroll', this.onScroll.bind(this));
 
     this.document = doc;
   }
@@ -275,30 +324,47 @@ class EditorComponent extends React.Component {
   }
 
   noteSelectedChanged(note) {
-    this.switchingDocument = true;
+
     var data = NoteStore.getSelectedNote();
 
-    this.note = data.note;
+    if( data ) {
+      this.note = data.note;
+      this.originalContent = data.contents;
+      this.refs.noteTitle.value = this.note.title;
 
-    this.originalContent = data.contents;
+      //this.document.setValue(data.contents);
+      if( ! this.openDocuments[this.note._id] ) {
+        this.openDocuments[this.note._id] = CodeMirror.Doc(data.contents, "slick-notes");
+      }
 
-    this.refs.noteTitle.value = this.note.title;
-    this.document.setValue(data.contents);
+      this.document.swapDoc(this.openDocuments[this.note._id]);
+      this.document.focus();
+    }
+    else {
+      this.note = null;
+      this.originalContent = null;
+      this.refs.noteTitle.value = "";
+    }
 
-    this.document.focus();
+    if( this.state.noSelection && this.note ) {
+      //setTimeout(function() {
+      //  this.document.refresh();
+      //}.bind(this), 100);
+    }
 
+    this.setState({noSelection: !this.note});
   }
 
   onTextChange() {
 
-    if (this.switchingDocument) {
-      this.switchingDocument = false;
-      return;
-    }
     var newContent = this.document.getValue();
 
     if (this.originalContent == newContent) {
       newContent = null;
+    }
+
+    if( !newContent && this.note.title == this.refs.noteTitle.value ) {
+      return;
     }
 
     this.note.title = this.refs.noteTitle.value;
@@ -313,14 +379,7 @@ class EditorComponent extends React.Component {
 
     if (answer) {
       NoteStore.delete(data.note);
-      NoteStore.removeSelectedNote();
-
-      this.document.setValue('');
-      this.document.focus();
-      this.refs.noteTitle.value = '';
-      this.note = null;
-      this.originalContent = null;
-      this.refreshPreview();
+      NoteStore.select();
     }
 
   }
@@ -371,6 +430,12 @@ class EditorComponent extends React.Component {
     }
   }
 
+  onToggleWrapping() {
+    var lineWrapping = !this.state.lineWrapping;
+    this.setState({lineWrapping});
+    this.document.setOption("lineWrapping", lineWrapping);
+  }
+
   onToggleTOC() {
     this.setState({
       showToc: !this.state.showToc
@@ -389,41 +454,6 @@ class EditorComponent extends React.Component {
       this.document.setCursor(item.line, 0);
       this.document.focus();
     }.bind(this));
-  }
-
-  initSpellcheck() {
-    CodeMirror.defineMode("spell-checker", function (config, parserConfig) {
-      console.log('define mode');
-      var wordDelimiters = "!\"#$%&()*+,-./:;<=>?@[\\]^_`{|}~ \t",
-        overlay = {
-          token: function (stream, state) {
-            var ch = stream.peek(),
-              word = "";
-
-            if (wordDelimiters.includes(ch)) {
-              stream.next();
-              return null;
-            }
-            while ((ch = stream.peek()) != null && !wordDelimiters.includes(ch)) {
-              word += ch;
-              stream.next();
-            }
-            word = word.replace(/[’ʼ]/g, "'");
-            if (SpellChecker.isMisspelled(word)) {
-              return "spell-error";
-            }
-            return null;
-          }
-        },
-        mode = CodeMirror.getMode(config, {
-          name: "markdown",
-          highlightFormatting: true,
-          taskLists: true,
-          fencedCodeBlocks: true,
-          strikethrough: true
-        });
-      return CodeMirror.overlayMode(mode, overlay, true);
-    });
   }
 
 }

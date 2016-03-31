@@ -34,8 +34,8 @@ class SidebarComponent extends React.Component {
         this.setState({notes: notes, notesMain: notes});
       }
       else {
-        this.setState({notes, activeItem: notes[0]._id});
-        this.props.onSelectItem(notes[0]);
+        this.setState({notes}); //, activeItem: notes[0]._id});
+        //this.props.onSelectItem(notes[0]);
       }
 
       if( this.state.searchText ) {
@@ -49,15 +49,17 @@ class SidebarComponent extends React.Component {
     return (
       <div>
         <div id="masthead">
-          <span className="title">SlickNotes</span>
+          <span className="title">
+            SLICK<span className="bold">NOTES</span>
+            <div className="button add-icon-button" onClick={this.createNewNote.bind(this)}>
+              <i className="fa fa-plus-circle"></i>
+            </div>
+          </span>
           <div className="search-container">
             <input ref="search" className="quick-search" type="text" placeholder="Quick search" onChange={this.onChangeSearchText.bind(this)}/>
             <i className="fa fa-search"></i>
           </div>
           <div className="spacer" style={{flex: 1}}></div>
-          <div className="button add-button" onClick={this.createNewNote.bind(this)}>
-            <i className="fa fa-plus-circle"></i>
-          </div>
         </div>
         <div className="list">
           {this.state.notes.map(function(item, index) {
@@ -72,7 +74,10 @@ class SidebarComponent extends React.Component {
   }
 
   onNoteSelectedChanged() {
-    if( this.state.activeItem != NoteStore.selectedNote._id ) {
+    if( !NoteStore.selectedNote ) {
+      this.setState({activeItem: null});
+    }
+    else if( this.state.activeItem != NoteStore.selectedNote._id ) {
       this.setState({activeItem: NoteStore.selectedNote._id});
     }
   }

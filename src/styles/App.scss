@@ -16,6 +16,7 @@ html, body {
   flex-direction: column;
   justify-content: stretch;
   font-family: "TypoPRO Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #354049;
 }
 
 * {
@@ -53,9 +54,8 @@ input:focus {
 }
 
 #app-container {
-  // display: flex;
-  // flex-direction: column;
-  // flex: 1;
+   display: flex;
+   flex-direction: column;
   background-color: #354049;
 }
 
@@ -69,13 +69,17 @@ input:focus {
   // padding: 5px 10px;
   box-sizing: border-box;
 
-  .title {
+  > .title {
     margin: auto 10px;
-    font-weight: bold;
     color: white;
-    padding: 5px;
-    font-size: 30px;
+    padding: 10px 0px 5px;
+    font-size: 20px;
+    align-self: stretch;
     // font-variant: small-caps;
+
+    .bold {
+      font-weight: 900;
+    }
   }
 
   .search-container {
@@ -108,11 +112,23 @@ input:focus {
     box-sizing: border-box;
   }
 
+  .add-icon-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border: 0;
+    color: white;
+    /* bottom: 0; */
+    padding: 15px 12px 10px;
+  }
+
   .add-button {
     padding-left: 15px;
     padding-right: 15px;
     padding-top: 13px;
+    color: white;
   }
+
 }
 
 .SplitPane.vertical {
@@ -141,9 +157,16 @@ input:focus {
     overflow: hidden;
     margin: 10px;
     margin-left: 0px;
-    background: white;
-    border-radius: 5px;
-    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.8);
+
+    &:not(.empty) {
+      background: white;
+      border-radius: 5px;
+      box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.8);
+    }
+
+    &.empty > *:not(.empty-message) {
+      visibility: hidden;
+    }
 
     .title-toolbar {
       position: absolute;
@@ -179,6 +202,11 @@ input:focus {
         padding: 10px;
         box-sizing: border-box;
       }
+    }
+
+    .note-container {
+      flex-direction: row;
+      display: flex;
     }
 
     .CodeMirror {
@@ -221,13 +249,14 @@ input:focus {
 
   .title {
     color: white;
-    font-size: 14px;
+    font-size: 12px;
+    text-shadow: 1px 1px 1px #222;
   }
 
   .date {
     color: #ddd;
-    margin-top: 5px;
-    font-size: 12px;
+    margin-top: 0px;
+    font-size: 11px;
     font-style: italic;
   }
 
@@ -278,9 +307,9 @@ input:focus {
 
   &.with-toc {
 
-    .CodeMirror-lines {
+    //.CodeMirror-lines {
       padding-right: 230px;
-    }
+    //}
   }
 }
 
