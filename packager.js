@@ -1,8 +1,8 @@
-var packager = require('electron-packager')
+var packager = require('electron-packager');
 var opts = {
   arch: "x64",
-  dir: "./dist-app",
-  platform: "linux"
+  dir: "./dist",
+  platform: "win32"
 };
 
 packager(opts, function done (err, appPath) {
